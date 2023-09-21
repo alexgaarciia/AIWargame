@@ -325,6 +325,13 @@ class Game:
         else:
             return False
 
+    def check_defender_moves(self, coords: CoordPair):
+        """This is a function to check whether the attacker's AI, Firewall and Program can only go up or left"""
+        if (coords.dst.col - coords.src.col) == 1 or (coords.dst.row - coords.src.row) == 1:
+            return True
+        else:
+            return False
+
     def is_valid_move(self, coords: CoordPair) -> bool:
         """Validate a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
@@ -349,6 +356,10 @@ class Game:
         piece = self.get(coords.src)
         if (piece.type == UnitType.AI or piece.type == UnitType.Firewall or piece.type == UnitType.Program) and piece.player == Player.Attacker:
             return self.check_attacker_moves(coords)
+
+        # Configuration of allowed movements of the defender:
+        if (piece.type == UnitType.AI or piece.type == UnitType.Firewall or piece.type == UnitType.Program) and piece.player == Player.Defender:
+            return self.check_defender_moves(coords)
 
         # Finally, the code checks whether there is a unit at the destination coordinate. If there isn't a unit, the
         # methods returns True.
