@@ -318,6 +318,13 @@ class Game:
             target.mod_health(health_delta)
             self.remove_dead(coord)
 
+    def check_attacker_moves(self, coords: CoordPair):
+        """This is a function to check whether the attacker's AI, Firewall and Program can only go up or left"""
+        if (coords.src.col - coords.dst.col) == 1 or (coords.src.row - coords.dst.row) == 1:
+            return True
+        else:
+            return False
+
     def is_valid_move(self, coords: CoordPair) -> bool:
         """Validate a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
@@ -337,6 +344,11 @@ class Game:
         # Checks that you only move one step (or stay the same):
         if (abs(coords.src.col - coords.dst.col) > 1) or (abs(coords.src.row - coords.dst.row) > 1):
             return False
+
+        # Configuration of allowed movements of the attacker:
+        piece = self.get(coords.src)
+        if (piece.type == UnitType.AI or piece.type == UnitType.Firewall or piece.type == UnitType.Program) and piece.player == Player.Attacker:
+            return self.check_attacker_moves(coords)
 
         # Finally, the code checks whether there is a unit at the destination coordinate. If there isn't a unit, the
         # methods returns True.
