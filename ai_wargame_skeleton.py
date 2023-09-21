@@ -325,10 +325,13 @@ class Game:
             return False
 
         unit = self.get(coords.src)  # Tells us what is in those coordinates.
-
         if unit is None or unit.player != self.next_player:
             # This condition checks whether there is a piece at the source coordinate or you are trying to move
             # the next player's pieces.
+            return False
+
+        # Only 1 movement:
+        if (abs(coords.src.col - coords.dst.col) > 1) or (abs(coords.src.row - coords.dst.row) > 1):
             return False
 
         # Finally, the code checks whether there is a unit at the destination coordinate. If there isn't a unit, the
