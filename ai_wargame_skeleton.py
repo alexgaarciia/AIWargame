@@ -324,13 +324,17 @@ class Game:
             # This first condition checks whether the source and destination coordinates are valid.
             return False
 
+        # This checks that you cannot move to the diagonals
+        if (coords.src.row != coords.dst.row and coords.src.col != coords.dst.col):
+            return False
+
         unit = self.get(coords.src)  # Tells us what is in those coordinates.
         if unit is None or unit.player != self.next_player:
             # This condition checks whether there is a piece at the source coordinate or you are trying to move
             # the next player's pieces.
             return False
 
-        # Only 1 movement:
+        # Checks that you only move one step (or stay the same):
         if (abs(coords.src.col - coords.dst.col) > 1) or (abs(coords.src.row - coords.dst.row) > 1):
             return False
 
