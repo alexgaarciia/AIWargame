@@ -103,7 +103,6 @@ class Unit:
             return 9 - target.health
         return amount
 
-
 ##############################################################################################################
 
 @dataclass(slots=True)
@@ -333,7 +332,23 @@ class Game:
             return False
 
     def is_valid_move(self, coords: CoordPair) -> bool:
-        """Validate a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
+        """Validate a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!! AND REMOVING UNIT/PIECE"""
+        unit = self.get(coords.src)  # Tells us what is in those coordinates.
+        piece = self.get(coords.src)
+
+        Coord_Up = Coord(coords.src.row - 1, coords.src.col)
+        Coord_Down = Coord(coords.src.row + 1, coords.src.col)
+        Coord_Left = Coord(coords.src.row, coords.src.col - 1)
+        Coord_Right = Coord(coords.src.row, coords.src.col + 1)
+
+        # Conditional statement for "engaged in combat" condition
+        if ((piece.type == UnitType.AI or piece.type == UnitType.Firewall or piece.type == UnitType.Program)
+                and ((self.get(Coord_Up) is not None and piece.player != self.get(Coord_Up).player) or
+                     (self.get(Coord_Down) is not None and piece.player != self.get(Coord_Down).player) or
+                     (self.get(Coord_Left) is not None and piece.player != self.get(Coord_Left).player)  or
+                     (self.get(Coord_Right) is not None and piece.player != self.get(Coord_Right).player))):
+            return False
+
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
             # This first condition checks whether the source and destination coordinates are valid.
             return False
@@ -342,10 +357,9 @@ class Game:
         if (coords.src.row != coords.dst.row and coords.src.col != coords.dst.col):
             return False
 
-        unit = self.get(coords.src)  # Tells us what is in those coordinates.
+        # This condition checks whether there is a piece at the source coordinate or you are trying to move
+        # the next player's pieces.
         if unit is None or unit.player != self.next_player:
-            # This condition checks whether there is a piece at the source coordinate or you are trying to move
-            # the next player's pieces.
             return False
 
         # Checks that you only move one step (or stay the same):
@@ -353,7 +367,6 @@ class Game:
             return False
 
         # Configuration of allowed movements of the attacker:
-        piece = self.get(coords.src)
         if (piece.type == UnitType.AI or piece.type == UnitType.Firewall or piece.type == UnitType.Program) and piece.player == Player.Attacker:
             return self.check_attacker_moves(coords)
 
