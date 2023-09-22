@@ -103,6 +103,7 @@ class Unit:
             return 9 - target.health
         return amount
 
+
 ##############################################################################################################
 
 @dataclass(slots=True)
@@ -156,7 +157,7 @@ class Coord:
         s = s.strip()
         for sep in " ,.:;-_":
             s = s.replace(sep, "")
-        if (len(s) == 2):
+        if len(s) == 2:
             coord = Coord()
             coord.row = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(s[0:1].upper())
             coord.col = "0123456789abcdef".find(s[1:2].lower())
@@ -207,7 +208,7 @@ class CoordPair:
         s = s.strip()
         for sep in " ,.:;-_":
             s = s.replace(sep, "")
-        if (len(s) == 4):
+        if len(s) == 4:
             coords = CoordPair()
             coords.src.row = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(s[0:1].upper())
             coords.src.col = "0123456789abcdef".find(s[1:2].lower())
@@ -344,7 +345,7 @@ class Game:
         if ((unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program)
                 and ((self.get(Coord_Up) is not None and unit.player != self.get(Coord_Up).player) or
                      (self.get(Coord_Down) is not None and unit.player != self.get(Coord_Down).player) or
-                     (self.get(Coord_Left) is not None and unit.player != self.get(Coord_Left).player)  or
+                     (self.get(Coord_Left) is not None and unit.player != self.get(Coord_Left).player) or
                      (self.get(Coord_Right) is not None and unit.player != self.get(Coord_Right).player))):
             return False
 
@@ -353,7 +354,7 @@ class Game:
             return False
 
         # This checks that you cannot move to the diagonals
-        if (coords.src.row != coords.dst.row and coords.src.col != coords.dst.col):
+        if coords.src.row != coords.dst.row and coords.src.col != coords.dst.col:
             return False
 
         # This condition checks whether there is a unit at the source coordinate or you are trying to move
@@ -366,25 +367,31 @@ class Game:
             return False
 
         # Configuration of allowed movements of the attacker:
-        if (unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Attacker:
+        if (
+                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Attacker:
             return self.check_attacker_moves(coords)
 
         # Configuration of allowed movements of the defender:
-        if (unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
+        if (
+                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
             return self.check_defender_moves(coords)
 
         # Finally, the code checks whether there is a unit at the destination coordinate. If there isn't a unit, the
         # methods returns True.
         unit = self.get(coords.dst)
-        return (unit is None)
+        return unit is None
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
         """Validate and perform a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
         if self.is_valid_move(coords):
-            self.set(coords.dst, self.get(coords.src))
-            self.set(coords.src, None)
-            return (True, "")
-        return (False, "invalid move")
+            self.set(coords.dst, self.get(coords.src))  # put in destination the unit in the source coordinates.
+            self.set(coords.src, None)  # remove from source the unit.
+            return True, ""
+        if self.get(coords.dst) is not None and self.get(coords.src).player != self.get(coords.dst).player:
+            # not finished
+            # ahora hay que evaluar qué ficha hace daño a cual accediendo a damage_table
+
+        return False, "invalid move"
 
     def next_turn(self):
         """Transitions game to the next turn."""
@@ -481,7 +488,7 @@ class Game:
         for coord in CoordPair.from_dim(self.options.dim).iter_rectangle():
             unit = self.get(coord)
             if unit is not None and unit.player == player:
-                yield (coord, unit)
+                yield coord, unit
 
     def is_finished(self) -> bool:
         """Check if the game is over."""
@@ -516,9 +523,9 @@ class Game:
         move_candidates = list(self.move_candidates())
         random.shuffle(move_candidates)
         if len(move_candidates) > 0:
-            return (0, move_candidates[0], 1)
+            return 0, move_candidates[0], 1
         else:
-            return (0, None, 0)
+            return 0, None, 0
 
     def suggest_move(self) -> CoordPair | None:
         """Suggest the next move using minimax alpha beta. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
