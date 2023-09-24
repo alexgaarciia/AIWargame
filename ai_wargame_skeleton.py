@@ -327,90 +327,86 @@ class Game:
 
     def check_defender_moves(self, coords: CoordPair):
         """This is a function to check whether the defender's AI, Firewall and Program can only go down or right"""
-        if ((coords.dst.col - coords.src.col == 1) and (coords.dst.row == coords.src.row)) or ((coords.dst.row - coords.src.row == 1) and (coords.dst.col == coords.src.col)):
+        if ((coords.dst.col - coords.src.col == 1) and (coords.dst.row == coords.src.row)) or (
+                (coords.dst.row - coords.src.row == 1) and (coords.dst.col == coords.src.col)):
             return True
         else:
             return False
 
     def is_valid_move(self, coords: CoordPair) -> bool:
         """Validate a move expressed as a CoordPair."""
+        # Definition of useful variables:
         unit = self.get(coords.src)  # Tells us what is in those coordinates.
-        # destination = self.get(coords.dst)
-
         Coord_Up = Coord(coords.src.row - 1, coords.src.col)
         Coord_Down = Coord(coords.src.row + 1, coords.src.col)
         Coord_Left = Coord(coords.src.row, coords.src.col - 1)
         Coord_Right = Coord(coords.src.row, coords.src.col + 1)
 
-        # Conditional statement for "engaged in combat" condition
+        # Conditional statement for "engaged in combat" condition.
         # TODO: Engaged in combat warning
         if ((unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program)
-                and ((self.get(Coord_Up) is not None and unit.player != self.get(Coord_Up).player) or
-                     (self.get(Coord_Down) is not None and unit.player != self.get(Coord_Down).player) or
-                     (self.get(Coord_Left) is not None and unit.player != self.get(Coord_Left).player) or
-                     (self.get(Coord_Right) is not None and unit.player != self.get(Coord_Right).player)))\
+            and ((self.get(Coord_Up) is not None and unit.player != self.get(Coord_Up).player) or
+                 (self.get(Coord_Down) is not None and unit.player != self.get(Coord_Down).player) or
+                 (self.get(Coord_Left) is not None and unit.player != self.get(Coord_Left).player) or
+                 (self.get(Coord_Right) is not None and unit.player != self.get(Coord_Right).player))) \
                 and self.get(coords.dst) is None:
-            print("Caso 1")
             return False
 
+        # Conditional statement to check whether the source and destination coordinates are valid.
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
-            # This first condition checks whether the source and destination coordinates are valid.
-            print("Caso 2")
-
             return False
 
-        # This checks that you cannot move to the diagonals
+        # Conditional statement to check that you cannot move to the diagonals.
         if coords.src.row != coords.dst.row and coords.src.col != coords.dst.col:
-            print("Caso 3")
-
             return False
 
-        # This condition checks whether there is a unit at the source coordinate or you are trying to move
+        # Conditional statement to check whether there is a unit at the source coordinate or you are trying to move
         # the next player's units.
         if unit is None or unit.player != self.next_player:
-            print("Caso 4")
-
             return False
 
-        # Checks that you only move one step (or stay the same):
+        # Conditional statement to check that you only move one step (or stay the same):
         if (abs(coords.src.col - coords.dst.col) > 1) or (abs(coords.src.row - coords.dst.row) > 1):
-            print("Caso 5")
-
             return False
 
         # Configuration of allowed movements of the attacker:
-        if (unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Attacker:
-            print("Caso 6")
-
+        if (
+                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Attacker:
             return self.check_attacker_moves(coords)
 
         # Configuration of allowed movements of the defender:
-        if (unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
-            print("Caso 7")
+        if (
+                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
             return self.check_defender_moves(coords)
 
         # Finally, the code checks whether there is a unit at the destination coordinate. If there isn't a unit, the
         # methods returns True.
-        # unit = self.get(coords.dst)
-        # return unit is None
+        unit = self.get(coords.dst)
+        return unit is None
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
         """Validate and perform a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
-        if self.get(coords.dst) is not None and self.get(coords.src).player != self.get(coords.dst).player:
-            source = self.get(coords.src)
-            destination = self.get(coords.dst)
+        # Conditional statement to check whether the movement is valid or not.
+        if not self.is_valid_move(coords):
+            return False, "invalid move"
 
+        # Definition of general variables:
+        source = self.get(coords.src)
+        destination = self.get(coords.dst)
+
+        # Conditions to perform damage in attack:
+        if self.get(coords.dst) is not None and source.player != destination.player:
+            # Perform damage on attacker:
             resulting_damage_att = source.damage_amount(destination)
             source.mod_health(-resulting_damage_att)
+
+            # Perform damage on defender:
             resulting_damage_def = destination.damage_amount(source)
             destination.mod_health(-resulting_damage_def)
-
-        if self.is_valid_move(coords):
+        else:
             self.set(coords.dst, self.get(coords.src))  # put in destination the unit in the source coordinates.
             self.set(coords.src, None)  # remove from source the unit.
-            return True, ""
-
-        return False, "invalid move"
+        return True, ""
 
     def next_turn(self):
         """Transitions game to the next turn."""
