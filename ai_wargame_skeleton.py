@@ -381,8 +381,8 @@ class Game:
 
         # Finally, the code checks whether there is a unit at the destination coordinate. If there isn't a unit, the
         # methods returns True.
-        unit = self.get(coords.dst)
-        return unit is None
+        unit_dst = self.get(coords.dst)
+        return unit_dst is None
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
         """Validate and perform a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
@@ -394,19 +394,32 @@ class Game:
         source = self.get(coords.src)
         destination = self.get(coords.dst)
 
-        # Conditions to perform damage in attack:
-        if self.get(coords.dst) is not None and source.player != destination.player:
-            # Perform damage on attacker:
+        # Conditions to perform damage in attack or heal pieces:
+        if destination is not None and source.player != destination.player:
+            # First compute how many damage each piece performs on each other.
             resulting_damage_att = source.damage_amount(destination)
-            source.mod_health(-resulting_damage_att)
-
-            # Perform damage on defender:
             resulting_damage_def = destination.damage_amount(source)
+
+            # Then perform damage:
+            source.mod_health(-resulting_damage_att)
             destination.mod_health(-resulting_damage_def)
+
+            # After performing moves, remove possible dead pieces:
+            self.remove_dead(coords.src)
+            self.remove_dead(coords.dst)
         else:
-            self.set(coords.dst, self.get(coords.src))  # put in destination the unit in the source coordinates.
-            self.set(coords.src, None)  # remove from source the unit.
+            if destination is None:
+                self.set(coords.dst, self.get(coords.src))  # put in destination the unit in the source coordinates.
+                self.set(coords.src, None)  # remove from source the unit.
+            else:
+                # Heal destination.
+                healing_amount = source.repair_amount(destination)
+                destination.mod_health(healing_amount)
         return True, ""
+
+    #TODO: METER CONDICIÓN PARA QUE TECH NO PUEDA REPARAR VIRUS.
+    #TODO: S CANNOT REPAIR T IF T HAS ALREADY HEALTH 9.
+    #TODO: JUNTAR TODOS ESOS TO-DO'S Y CREAR MENSAJES DE INVALID ACTION.
 
     def next_turn(self):
         """Transitions game to the next turn."""
