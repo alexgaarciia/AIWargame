@@ -323,6 +323,7 @@ class Game:
         if (coords.src.col - coords.dst.col) == 1 or (coords.src.row - coords.dst.row) == 1:
             return True
         else:
+            print("You cannot move the Attacker's AI, Firewall and Program down or right")
             return False
 
     def check_defender_moves(self, coords: CoordPair):
@@ -331,6 +332,7 @@ class Game:
                 (coords.dst.row - coords.src.row == 1) and (coords.dst.col == coords.src.col)):
             return True
         else:
+            print("You cannot move the Defender's AI, Firewall and Program up or left")
             return False
 
     def is_valid_move(self, coords: CoordPair) -> bool:
@@ -342,59 +344,67 @@ class Game:
         Coord_Left = Coord(coords.src.row, coords.src.col - 1)
         Coord_Right = Coord(coords.src.row, coords.src.col + 1)
 
-        # Conditional statement for "engaged in combat" condition.
-        # TODO: Engaged in combat warning
-        if ((unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program)
-            and ((self.get(Coord_Up) is not None and unit.player != self.get(Coord_Up).player) or
-                 (self.get(Coord_Down) is not None and unit.player != self.get(Coord_Down).player) or
-                 (self.get(Coord_Left) is not None and unit.player != self.get(Coord_Left).player) or
-                 (self.get(Coord_Right) is not None and unit.player != self.get(Coord_Right).player))) \
-                and self.get(coords.dst) is None:
-            return False
-
-        # Conditional statement to check whether the source and destination coordinates are valid.
-        if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
-            return False
-
-        # Conditional statement to check that you cannot move to the diagonals.
-        if coords.src.row != coords.dst.row and coords.src.col != coords.dst.col:
-            return False
+        # print(Coord_Up, Coord_Down, Coord_Left, Coord_Right)
 
         # Conditional statement to check whether there is a unit at the source coordinate or you are trying to move
         # the next player's units.
         if unit is None or unit.player != self.next_player:
+            print("You cannot move the opponent's unit or there is no unit in the source cell")
+            return False
+
+        # Conditional statement for "engaged in combat" condition.
+        if (((unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program)
+             and ((self.get(Coord_Up) is not None and unit.player != self.get(Coord_Up).player) or
+                  (self.get(Coord_Down) is not None and unit.player != self.get(Coord_Down).player) or
+                  (self.get(Coord_Left) is not None and unit.player != self.get(Coord_Left).player) or
+                  (self.get(Coord_Right) is not None and unit.player != self.get(Coord_Right).player))) and self.get(
+            coords.dst) is None):
+            print("The unit ", unit.type.value, "is engaged in combat")
+            return False
+
+        # Conditional statement to check whether the source and destination coordinates are valid.
+        if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
+            print("Source or destination coordinates are not valid")
+            return False
+
+        # Conditional statement to check that you cannot move to the diagonals.
+        if coords.src.row != coords.dst.row and coords.src.col != coords.dst.col:
+            print("You cannot move to the diagonals")
             return False
 
         # Conditional statement to check that you only move one step (or stay the same):
         if (abs(coords.src.col - coords.dst.col) > 1) or (abs(coords.src.row - coords.dst.row) > 1):
+            print("You can only move one step at a time")
             return False
 
         # Configuration of allowed movements of the attacker:
-        if (
-                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Attacker:
+        if (unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Attacker:
             return self.check_attacker_moves(coords)
 
         # Configuration of allowed movements of the defender:
-        if (
-                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
+        if (unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
             return self.check_defender_moves(coords)
 
         # Finally, the code checks whether there is a unit at the destination coordinate. If there isn't a unit, the
         # methods returns True.
-        unit_dst = self.get(coords.dst)
-        return unit_dst is None
+
+        # unit_dst = self.get(coords.dst)
+        # print("7")
+        # return unit_dst is None
+        return True
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
         """Validate and perform a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
         # Conditional statement to check whether the movement is valid or not.
         if not self.is_valid_move(coords):
-            return False, "invalid move"
+            return False, "Invalid move"
 
         # Definition of general variables:
         source = self.get(coords.src)
         destination = self.get(coords.dst)
 
         # Conditions to perform damage in attack or heal pieces:
+        # If destination is not empty and the unit is not yours: damage
         if destination is not None and source.player != destination.player:
             # First compute how many damage each piece performs on each other.
             resulting_damage_att = source.damage_amount(destination)
@@ -407,19 +417,23 @@ class Game:
             # After performing moves, remove possible dead pieces:
             self.remove_dead(coords.src)
             self.remove_dead(coords.dst)
+
+        # If the unit at destination is in your team
         else:
+            # If destination is empty (and the unit is yours): move
             if destination is None:
                 self.set(coords.dst, self.get(coords.src))  # put in destination the unit in the source coordinates.
                 self.set(coords.src, None)  # remove from source the unit.
+            # If destination not is empty (and the unit is yours): heal
             else:
                 # Heal destination.
                 healing_amount = source.repair_amount(destination)
-                destination.mod_health(healing_amount)
+                # if you cannot heal (two options: either the unit is fully healed or you cannot heal it)
+                if healing_amount == 0:
+                    return False, "Invalid move: you cannot repair a fully healed unit or you don't have healing power"
+                else:
+                    destination.mod_health(healing_amount)
         return True, ""
-
-    #TODO: METER CONDICIÓN PARA QUE TECH NO PUEDA REPARAR VIRUS.
-    #TODO: S CANNOT REPAIR T IF T HAS ALREADY HEALTH 9.
-    #TODO: JUNTAR TODOS ESOS TO-DO'S Y CREAR MENSAJES DE INVALID ACTION.
 
     def next_turn(self):
         """Transitions game to the next turn."""
@@ -498,6 +512,7 @@ class Game:
                     self.next_turn()
                     break
                 else:
+                    print(result)
                     print("The move is not valid! Try again.")
 
     def computer_turn(self) -> CoordPair | None:
