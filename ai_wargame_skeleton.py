@@ -323,7 +323,7 @@ class Game:
         if (coords.src.col - coords.dst.col) == 1 or (coords.src.row - coords.dst.row) == 1:
             return True
         else:
-            print("You cannot move the Attacker's AI, Firewall and Program down or right")
+            print("Warning: You cannot move the Attacker's AI, Firewall and Program down or right")
             return False
 
     def check_defender_moves(self, coords: CoordPair):
@@ -332,7 +332,7 @@ class Game:
                 (coords.dst.row - coords.src.row == 1) and (coords.dst.col == coords.src.col)):
             return True
         else:
-            print("You cannot move the Defender's AI, Firewall and Program up or left")
+            print("Warning: You cannot move the Defender's AI, Firewall and Program up or left")
             return False
 
     def is_valid_move(self, coords: CoordPair) -> bool:
@@ -349,7 +349,7 @@ class Game:
         # Conditional statement to check whether there is a unit at the source coordinate or you are trying to move
         # the next player's units.
         if unit is None or unit.player != self.next_player:
-            print("You cannot move the opponent's unit or there is no unit in the source cell")
+            print("Warning: You cannot move the opponent's unit or there is no unit in the source cell")
             return False
 
         # Conditional statement for "engaged in combat" condition.
@@ -359,12 +359,12 @@ class Game:
                   (self.get(Coord_Left) is not None and unit.player != self.get(Coord_Left).player) or
                   (self.get(Coord_Right) is not None and unit.player != self.get(Coord_Right).player))) and self.get(
             coords.dst) is None):
-            print("The unit ", unit.type.value, "is engaged in combat")
+            print("Warning: The unit ", unit.type.name," is engaged in combat")
             return False
 
         # Conditional statement to check whether the source and destination coordinates are valid.
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
-            print("Source or destination coordinates are not valid")
+            print("Warning: Source or destination coordinates are not valid")
             return False
 
         # Conditional statement to check that you cannot move to the diagonals.
@@ -513,7 +513,7 @@ class Game:
                     break
                 else:
                     print(result)
-                    print("The move is not valid! Try again.")
+#                    print("The move is not valid! Try again.")
 
     def computer_turn(self) -> CoordPair | None:
         """Computer plays a move."""
