@@ -565,7 +565,9 @@ class Game:
 
     def has_winner(self) -> Player | None:
         """Check if the game is over and returns winner"""
-        if self.options.max_turns is not None and self.turns_played >= self.options.max_turns:
+        # There was an error in this first if-else statement. There was self.turns_played >= self.options.max_turns,
+        # but if the defender decided to kill himself in the last round, he would be the winner.
+        if self.options.max_turns is not None and self.turns_played > self.options.max_turns:
             return Player.Defender
         elif self._attacker_has_ai:
             if self._defender_has_ai:
@@ -695,6 +697,7 @@ def main():
     while True:
         # While loop that runs until a correct input is introduced.
         try:  # This block is where potential errors are handled.
+            options.max_time = int(input('Enter the maximum number of time (in seconds): '))
             options.max_turns = int(input('Enter the maximum number of turns: '))
             break
         except ValueError:
@@ -702,7 +705,8 @@ def main():
 
     # Append the game parameters:
     information.append("Game Parameters:")
-    information.append(f"\tMaximum number of turns: {options.alpha_beta}")
+    information.append(f"\tTimeout (in seconds): {options.max_time}")
+    information.append(f"\tMaximum number of turns: {options.max_turns}")
     information.append(f"\tPlayer mode: {options.game_type.name}")
     information.append("\n")
 
@@ -750,7 +754,6 @@ def main():
             for i in information:
                 file.write(i)
                 file.write("\n")
-
 
     with open("gameTrace.txt", "a") as file:
         file.write(player_win)
