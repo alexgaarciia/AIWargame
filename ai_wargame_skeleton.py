@@ -320,7 +320,7 @@ class Game:
 
     def check_attacker_moves(self, coords: CoordPair):
         """This is a function to check whether the attacker's AI, Firewall and Program can only go up or left"""
-        if (coords.src.col - coords.dst.col) == 1 or (coords.src.row - coords.dst.row) == 1:
+        if (coords.src.col - coords.dst.col) == 1 or (coords.src.row - coords.dst.row) == 1 or (coords.src == coords.dst):
             return True
         else:
             print("Warning: You cannot move the Attacker's AI, Firewall and Program down or right")
@@ -329,7 +329,7 @@ class Game:
     def check_defender_moves(self, coords: CoordPair):
         """This is a function to check whether the defender's AI, Firewall and Program can only go down or right"""
         if ((coords.dst.col - coords.src.col == 1) and (coords.dst.row == coords.src.row)) or (
-                (coords.dst.row - coords.src.row == 1) and (coords.dst.col == coords.src.col)):
+                (coords.dst.row - coords.src.row == 1) and (coords.dst.col == coords.src.col)) or (coords.src == coords.dst):
             return True
         else:
             print("Warning: You cannot move the Defender's AI, Firewall and Program up or left")
@@ -369,12 +369,12 @@ class Game:
 
         # Conditional statement to check that you cannot move to the diagonals.
         if coords.src.row != coords.dst.row and coords.src.col != coords.dst.col:
-            print("You cannot move to the diagonals")
+            print("Warning: You cannot move to the diagonals")
             return False
 
         # Conditional statement to check that you only move one step (or stay the same):
         if (abs(coords.src.col - coords.dst.col) > 1) or (abs(coords.src.row - coords.dst.row) > 1):
-            print("You can only move one step at a time")
+            print("Warning: You can only move one step at a time")
             return False
 
         # Configuration of allowed movements of the attacker:
@@ -394,17 +394,19 @@ class Game:
         return True
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
-        """Validate and perform a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
-        # Conditional statement to check whether the movement is valid or not.
-        if not self.is_valid_move(coords):
-            return False, "Invalid move"
+        """Validate and perform a move expressed as a CoordPair."""
 
         # Definition of general variables:
         source = self.get(coords.src)
         destination = self.get(coords.dst)
 
+        # Conditional statement to check whether the movement is valid or not.
+        if not self.is_valid_move(coords):
+            return False, "Invalid move"
+
+
         # Conditions to perform damage in attack or heal pieces:
-        # If destination is not empty and the unit is not yours: damage
+        # If destination is not empty and the destination unit is not yours: damage
         if destination is not None and source.player != destination.player:
             # First compute how many damage each piece performs on each other.
             resulting_damage_att = source.damage_amount(destination)
@@ -418,13 +420,33 @@ class Game:
             self.remove_dead(coords.src)
             self.remove_dead(coords.dst)
 
-        # If the unit at destination is in your team
+        # If the unit at destination is in your team or destination is empty
         else:
-            # If destination is empty (and the unit is yours): move
+            # If destination is empty (and the destination unit is yours): move
             if destination is None:
                 self.set(coords.dst, self.get(coords.src))  # put in destination the unit in the source coordinates.
                 self.set(coords.src, None)  # remove from source the unit.
-            # If destination not is empty (and the unit is yours): heal
+
+            # If the destination is not empty and the destination cell = source cell: autodestruct
+            elif destination is not None and coords.src == coords.dst:
+                
+                # Create the adjacent coordinates, get its element and remove 2 points:
+                for i in range(-1,2):
+                    for j in range(-1,2):
+                        coord = Coord(coords.src.row + i, coords.src.col + j)
+                        # 'get' checks the value of the element in 'coord' and if the coordinates are inside the board
+                        unit = self.get(coord)
+                        if unit and (not (i==0 and j==0)):
+                            unit.mod_health(-2)
+                            # if it is dead, remove it
+                            self.remove_dead(coord)
+
+                # get the source/destination unit's health, take it all and remove it
+                total_health = source.health
+                source.mod_health(-total_health)
+                self.remove_dead(coords.src)
+
+            # If destination not is empty and the destination unit is yours: heal
             else:
                 # Heal destination.
                 healing_amount = source.repair_amount(destination)
