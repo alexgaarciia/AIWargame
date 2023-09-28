@@ -668,6 +668,7 @@ class Game:
 
 def main():
     # parse command line arguments
+    information = []
     parser = argparse.ArgumentParser(
         prog='ai_wargame',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -699,6 +700,12 @@ def main():
         except ValueError:
             print('Invalid input. Please enter a valid integer.')
 
+    # Append the game parameters:
+    information.append("Game Parameters:")
+    information.append(f"\tMaximum number of turns: {options.alpha_beta}")
+    information.append(f"\tPlayer mode: {options.game_type.name}")
+    information.append("\n")
+
     # override class defaults via command line options
     if args.max_depth is not None:
         options.max_depth = args.max_depth
@@ -709,14 +716,18 @@ def main():
 
     # create a new game
     game = Game(options=options)
+    # write in our file the initial configuration of the board
+    information.append(game.to_string())
 
     # the main game loop
     while True:
         print()
         print(game)
+
         winner = game.has_winner()
         if winner is not None:
             print(f"{winner.name} wins!")
+            player_win = str(winner.name) + " wins in " + str(game.turns_played) + " turns"
             break
         if game.options.game_type == GameType.AttackerVsDefender:
             game.human_turn()
@@ -732,6 +743,17 @@ def main():
             else:
                 print("Computer doesn't know what to do!!!")
                 exit(1)
+
+        # output of the game
+        information.append(game.to_string())
+        with open("gameTrace.txt", "w") as file:
+            for i in information:
+                file.write(i)
+                file.write("\n")
+
+
+    with open("gameTrace.txt", "a") as file:
+        file.write(player_win)
 
 
 ##############################################################################################################
