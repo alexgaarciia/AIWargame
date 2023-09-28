@@ -320,7 +320,8 @@ class Game:
 
     def check_attacker_moves(self, coords: CoordPair):
         """This is a function to check whether the attacker's AI, Firewall and Program can only go up or left"""
-        if (coords.src.col - coords.dst.col) == 1 or (coords.src.row - coords.dst.row) == 1 or (coords.src == coords.dst):
+        if (coords.src.col - coords.dst.col) == 1 or (coords.src.row - coords.dst.row) == 1 or (
+                coords.src == coords.dst):
             return True
         else:
             print("Warning: You cannot move the Attacker's AI, Firewall and Program down or right")
@@ -329,7 +330,8 @@ class Game:
     def check_defender_moves(self, coords: CoordPair):
         """This is a function to check whether the defender's AI, Firewall and Program can only go down or right"""
         if ((coords.dst.col - coords.src.col == 1) and (coords.dst.row == coords.src.row)) or (
-                (coords.dst.row - coords.src.row == 1) and (coords.dst.col == coords.src.col)) or (coords.src == coords.dst):
+                (coords.dst.row - coords.src.row == 1) and (coords.dst.col == coords.src.col)) or (
+                coords.src == coords.dst):
             return True
         else:
             print("Warning: You cannot move the Defender's AI, Firewall and Program up or left")
@@ -359,7 +361,7 @@ class Game:
                   (self.get(Coord_Left) is not None and unit.player != self.get(Coord_Left).player) or
                   (self.get(Coord_Right) is not None and unit.player != self.get(Coord_Right).player))) and self.get(
             coords.dst) is None):
-            print("Warning: The unit ", unit.type.name," is engaged in combat")
+            print("Warning: The unit ", unit.type.name, " is engaged in combat")
             return False
 
         # Conditional statement to check whether the source and destination coordinates are valid.
@@ -378,11 +380,13 @@ class Game:
             return False
 
         # Configuration of allowed movements of the attacker:
-        if (unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Attacker:
+        if (
+                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Attacker:
             return self.check_attacker_moves(coords)
 
         # Configuration of allowed movements of the defender:
-        if (unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
+        if (
+                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
             return self.check_defender_moves(coords)
 
         # Finally, the code checks whether there is a unit at the destination coordinate. If there isn't a unit, the
@@ -404,11 +408,10 @@ class Game:
         if not self.is_valid_move(coords):
             return False, "Invalid move"
 
-
         # Conditions to perform damage in attack or heal pieces:
         # If destination is not empty and the destination unit is not yours: damage
         if destination is not None and source.player != destination.player:
-            # First compute how many damage each piece performs on each other.
+            # First compute how much damage each piece performs on each other.
             resulting_damage_att = source.damage_amount(destination)
             resulting_damage_def = destination.damage_amount(source)
 
@@ -427,16 +430,16 @@ class Game:
                 self.set(coords.dst, self.get(coords.src))  # put in destination the unit in the source coordinates.
                 self.set(coords.src, None)  # remove from source the unit.
 
-            # If the destination is not empty and the destination cell = source cell: autodestruct
+            # If the destination is not empty and the destination cell = source cell: auto-destruct.
             elif destination is not None and coords.src == coords.dst:
-                
+
                 # Create the adjacent coordinates, get its element and remove 2 points:
-                for i in range(-1,2):
-                    for j in range(-1,2):
+                for i in range(-1, 2):
+                    for j in range(-1, 2):
                         coord = Coord(coords.src.row + i, coords.src.col + j)
                         # 'get' checks the value of the element in 'coord' and if the coordinates are inside the board
                         unit = self.get(coord)
-                        if unit and (not (i==0 and j==0)):
+                        if unit and (not (i == 0 and j == 0)):
                             unit.mod_health(-2)
                             # if it is dead, remove it
                             self.remove_dead(coord)
@@ -535,7 +538,8 @@ class Game:
                     break
                 else:
                     print(result)
-#                    print("The move is not valid! Try again.")
+
+    #                    print("The move is not valid! Try again.")
 
     def computer_turn(self) -> CoordPair | None:
         """Computer plays a move."""
@@ -685,6 +689,15 @@ def main():
 
     # set up game options
     options = Options(game_type=game_type)
+
+    # Ask the user for max_turns:
+    while True:
+        # While loop that runs until a correct input is introduced.
+        try:  # This block is where potential errors are handled.
+            options.max_turns = int(input('Enter the maximum number of turns: '))
+            break
+        except ValueError:
+            print('Invalid input. Please enter a valid integer.')
 
     # override class defaults via command line options
     if args.max_depth is not None:
