@@ -566,8 +566,9 @@ class Game:
     def has_winner(self) -> Player | None:
         """Check if the game is over and returns winner"""
         # There was an error in this first if-else statement. There was self.turns_played >= self.options.max_turns,
-        # but if the defender decided to auto-destruct in the last round, he would be the winner.
-        if self.options.max_turns is not None and self.turns_played > self.options.max_turns:
+        # but if the defender decided to auto-destruct in the last round, he would be the winner. That is why
+        # we added to the condition "and self._defender_has_ai".
+        if self.options.max_turns is not None and self.turns_played >= self.options.max_turns and self._defender_has_ai:
             return Player.Defender
         elif self._attacker_has_ai:
             if self._defender_has_ai:
