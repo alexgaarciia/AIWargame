@@ -1,3 +1,4 @@
+# Import necessary libraries
 from __future__ import annotations
 import argparse
 import copy
@@ -319,8 +320,9 @@ class Game:
             self.remove_dead(coord)
 
     def check_attacker_moves(self, coords: CoordPair):
-        """This is a function to check whether the attacker's AI, Firewall and Program can only go up or left"""
-        if (coords.src.col - coords.dst.col) == 1 or (coords.src.row - coords.dst.row) == 1 or (
+        """This is a function to check that the attacker's AI, Firewall and Program can only go up or left"""
+        if ((coords.src.col - coords.dst.col) == 1 and (coords.src.row == coords.dst.row) or (
+                coords.src.row - coords.dst.row) == 1 and (coords.src.col == coords.dst.col)) or (
                 coords.src == coords.dst):
             return True
         else:
@@ -328,7 +330,7 @@ class Game:
             return False
 
     def check_defender_moves(self, coords: CoordPair):
-        """This is a function to check whether the defender's AI, Firewall and Program can only go down or right"""
+        """This is a function to check that the defender's AI, Firewall and Program can only go down or right"""
         if ((coords.dst.col - coords.src.col == 1) and (coords.dst.row == coords.src.row)) or (
                 (coords.dst.row - coords.src.row == 1) and (coords.dst.col == coords.src.col)) or (
                 coords.src == coords.dst):
@@ -341,12 +343,10 @@ class Game:
         """Validate a move expressed as a CoordPair."""
         # Definition of useful variables:
         unit = self.get(coords.src)  # Tells us what is in those coordinates.
-        Coord_Up = Coord(coords.src.row - 1, coords.src.col)
-        Coord_Down = Coord(coords.src.row + 1, coords.src.col)
-        Coord_Left = Coord(coords.src.row, coords.src.col - 1)
-        Coord_Right = Coord(coords.src.row, coords.src.col + 1)
-
-        # print(Coord_Up, Coord_Down, Coord_Left, Coord_Right)
+        Coord_Up = Coord(coords.src.row - 1, coords.src.col)  # Coordinate above the source unit.
+        Coord_Down = Coord(coords.src.row + 1, coords.src.col)  # Coordinate below the source unit.
+        Coord_Left = Coord(coords.src.row, coords.src.col - 1)  # Coordinate to the left of the source unit.
+        Coord_Right = Coord(coords.src.row, coords.src.col + 1)  # Coordinate to the right of the source unit.
 
         # Conditional statement to check whether there is a unit at the source coordinate or you are trying to move
         # the next player's units.
@@ -389,17 +389,10 @@ class Game:
                 unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
             return self.check_defender_moves(coords)
 
-        # Finally, the code checks whether there is a unit at the destination coordinate. If there isn't a unit, the
-        # methods returns True.
-
-        # unit_dst = self.get(coords.dst)
-        # print("7")
-        # return unit_dst is None
         return True
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
         """Validate and perform a move expressed as a CoordPair."""
-
         # Definition of general variables:
         source = self.get(coords.src)
         destination = self.get(coords.dst)
@@ -409,7 +402,7 @@ class Game:
             return False, "Invalid move"
 
         # Conditions to perform damage in attack or heal pieces:
-        # If destination is not empty and the destination unit is not yours: damage
+        # If destination is not empty and the destination unit is not yours: damage.
         if destination is not None and source.player != destination.player:
             # First compute how much damage each piece performs on each other.
             resulting_damage_att = source.damage_amount(destination)
@@ -423,9 +416,9 @@ class Game:
             self.remove_dead(coords.src)
             self.remove_dead(coords.dst)
 
-        # If the unit at destination is in your team or destination is empty
+        # If the unit at destination is in your team or destination is empty:
         else:
-            # If destination is empty (and the destination unit is yours): move
+            # If destination is empty (and the source unit is yours): move.
             if destination is None:
                 self.set(coords.dst, self.get(coords.src))  # put in destination the unit in the source coordinates.
                 self.set(coords.src, None)  # remove from source the unit.
@@ -437,28 +430,29 @@ class Game:
                 for i in range(-1, 2):
                     for j in range(-1, 2):
                         coord = Coord(coords.src.row + i, coords.src.col + j)
-                        # 'get' checks the value of the element in 'coord' and if the coordinates are inside the board
+                        # 'get' checks the value of the element in 'coord' and if the coordinates are inside the board.
                         unit = self.get(coord)
                         if unit and (not (i == 0 and j == 0)):
                             unit.mod_health(-2)
-                            # if it is dead, remove it
+                            # If it is dead, remove it.
                             self.remove_dead(coord)
 
-                # get the source/destination unit's health, take it all and remove it
+                # Get the source/destination unit's health, take it all and remove it.
                 total_health = source.health
                 source.mod_health(-total_health)
                 self.remove_dead(coords.src)
 
-            # If destination not is empty and the destination unit is yours: heal
+            # If destination is not empty and the destination unit is yours: heal.
             else:
                 # Heal destination.
                 healing_amount = source.repair_amount(destination)
-                # if you cannot heal (two options: either the unit is fully healed or you cannot heal it)
+
+                # Necessary condition to check if you cannot heal (two options: either the unit is fully healed or you cannot heal it).
                 if healing_amount == 0:
                     return False, "Invalid move: you cannot repair a fully healed unit or you don't have healing power"
                 else:
                     destination.mod_health(healing_amount)
-        return True, ""
+        return True, str(coords)
 
     def next_turn(self):
         """Transitions game to the next turn."""
@@ -538,8 +532,6 @@ class Game:
                     break
                 else:
                     print(result)
-
-    #                    print("The move is not valid! Try again.")
 
     def computer_turn(self) -> CoordPair | None:
         """Computer plays a move."""
@@ -708,8 +700,11 @@ def main():
     information.append("Game Parameters:")
     information.append(f"\tTimeout (in seconds): {options.max_time}")
     information.append(f"\tMaximum number of turns: {options.max_turns}")
+    information.append(f"\tAlpha-beta: {options.alpha_beta}")
     information.append(f"\tPlayer mode: {options.game_type.name}")
     information.append("\n")
+    output_file = "gameTrace-" + str(options.alpha_beta).lower() + "-" + str(options.max_time) + "-" + str(
+        options.max_turns) + ".txt"
 
     # override class defaults via command line options
     if args.max_depth is not None:
@@ -719,9 +714,10 @@ def main():
     if args.broker is not None:
         options.broker = args.broker
 
-    # create a new game
+    # Create a new game:
     game = Game(options=options)
-    # write in our file the initial configuration of the board
+
+    # Write in our file the initial configuration of the board.
     information.append(game.to_string())
 
     # the main game loop
@@ -751,15 +747,16 @@ def main():
 
         # output of the game
         information.append(game.to_string())
-        with open("gameTrace.txt", "w") as file:
+        with open(output_file, "w") as file:
             for i in information:
                 file.write(i)
                 file.write("\n")
 
-    with open("gameTrace.txt", "a") as file:
+    # Declare the winner:
+    with open(output_file, "a") as file:
         file.write(player_win)
 
-##############################################################################################################
 
+##############################################################################################################
 if __name__ == '__main__':
     main()
