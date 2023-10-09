@@ -612,6 +612,36 @@ class Game:
         else:
             return 0, None, 0
 
+    def e0(self):
+        count = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+        for i in range(self.options.dim):
+            for j in range(self.options.dim):
+                if self.board[i][j] is not None:
+                    count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
+
+        return lambda e: (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
+                         - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
+
+    def e1(self):
+        count = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+        for i in range(self.options.dim):
+            for j in range(self.options.dim):
+                if self.board[i][j] is not None:
+                    count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
+
+        return lambda e: (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
+                         - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
+
+    def e2(self):
+        count = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+        for i in range(self.options.dim):
+            for j in range(self.options.dim):
+                if self.board[i][j] is not None:
+                    count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
+
+        return lambda e: (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
+                         - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
+
     def suggest_move(self) -> CoordPair | None:
         """Suggest the next move using minimax alpha beta. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
         start_time = datetime.now()
