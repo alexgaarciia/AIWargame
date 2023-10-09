@@ -9,10 +9,30 @@ from time import sleep
 from typing import Tuple, TypeVar, Type, Iterable, ClassVar
 import random
 import requests
+import sys
 
 # maximum and minimum values for our heuristic scores (usually represents an end of game condition)
 MAX_HEURISTIC_SCORE = 2000000000
 MIN_HEURISTIC_SCORE = -2000000000
+
+
+class FileOutput:
+    def __init__(self, file_name):
+        self.file = open(file_name, 'w')
+        self.stdout = sys.stdout
+        sys.stdout = self
+
+    def write(self, text):
+        self.file.write(text)
+        self.stdout.write(text)
+
+    def flush(self):
+        self.file.flush()
+        self.stdout.flush()
+
+    def close(self):
+        sys.stdout = self.stdout
+        self.file.close()
 
 
 class UnitType(Enum):
@@ -503,6 +523,7 @@ class Game:
             s = input(F'Player {self.next_player.name}, enter your move: ')
             coords = CoordPair.from_string(s)
             if coords is not None and self.is_valid_coord(coords.src) and self.is_valid_coord(coords.dst):
+                print(f'{coords}\n')
                 return coords
             else:
                 print('Invalid coordinates! Try again.')
@@ -663,7 +684,6 @@ class Game:
 
 def main():
     # parse command line arguments
-    information = []
     parser = argparse.ArgumentParser(
         prog='ai_wargame',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -686,6 +706,8 @@ def main():
     # set up game options
     options = Options(game_type=game_type)
 
+    fileprint = FileOutput(f'gameTrace-{options.alpha_beta}-{options.max_time}-{options.max_turns}.txt')
+
     # Ask the user for max_turns:
     while True:
         # While loop that runs until a correct input is introduced.
@@ -697,14 +719,13 @@ def main():
             print('Invalid input. Please enter a valid integer.')
 
     # Append the game parameters:
-    information.append("Game Parameters:")
-    information.append(f"\tTimeout (in seconds): {options.max_time}")
-    information.append(f"\tMaximum number of turns: {options.max_turns}")
-    information.append(f"\tAlpha-beta: {options.alpha_beta}")
-    information.append(f"\tPlayer mode: {options.game_type.name}")
-    information.append("\n")
-    output_file = "gameTrace-" + str(options.alpha_beta).lower() + "-" + str(options.max_time) + "-" + str(
-        options.max_turns) + ".txt"
+    print("Game Parameters:")
+    print(f"\tTimeout (in seconds): {options.max_time}")
+    print(f"\tMaximum number of turns: {options.max_turns}")
+    print(f"\tAlpha-beta: {options.alpha_beta}")
+    print(f"\tPlayer mode: {options.game_type.name}")
+    print("\n")
+
 
     # override class defaults via command line options
     if args.max_depth is not None:
@@ -717,8 +738,6 @@ def main():
     # Create a new game:
     game = Game(options=options)
 
-    # Write in our file the initial configuration of the board.
-    information.append(game.to_string())
 
     # the main game loop
     while True:
@@ -745,16 +764,7 @@ def main():
                 print("Computer doesn't know what to do!!!")
                 exit(1)
 
-        # output of the game
-        information.append(game.to_string())
-        with open(output_file, "w") as file:
-            for i in information:
-                file.write(i)
-                file.write("\n")
-
-    # Declare the winner:
-    with open(output_file, "a") as file:
-        file.write(player_win)
+    fileprint.close()
 
 
 ##############################################################################################################
