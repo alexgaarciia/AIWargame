@@ -689,6 +689,7 @@ def main():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
+    parser.add_argument('--max_turns', type=float, help='maximum number of turns before game ends')
     parser.add_argument('--game_type', type=str, default="manual", help='game type: auto|attacker|defender|manual')
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
@@ -708,16 +709,6 @@ def main():
 
     fileprint = FileOutput(f'gameTrace-{options.alpha_beta}-{options.max_time}-{options.max_turns}.txt')
 
-    # Ask the user for max_turns:
-    while True:
-        # While loop that runs until a correct input is introduced.
-        try:  # This block is where potential errors are handled.
-            options.max_time = int(input('Enter the maximum number of time (in seconds): '))
-            options.max_turns = int(input('Enter the maximum number of turns: '))
-            break
-        except ValueError:
-            print('Invalid input. Please enter a valid integer.')
-
     # Append the game parameters:
     print("Game Parameters:")
     print(f"\tTimeout (in seconds): {options.max_time}")
@@ -725,7 +716,6 @@ def main():
     print(f"\tAlpha-beta: {options.alpha_beta}")
     print(f"\tPlayer mode: {options.game_type.name}")
     print("\n")
-
 
     # override class defaults via command line options
     if args.max_depth is not None:
@@ -737,7 +727,6 @@ def main():
 
     # Create a new game:
     game = Game(options=options)
-
 
     # the main game loop
     while True:
