@@ -644,14 +644,15 @@ class Game:
 
     def minimax(self, depth, maximizing):
         if self.has_winner() is not None:
-            return self.e1()  # change to use lambda expression of euristics to  map to e1, 2, or 3 based on options.
+            return self.e1()
+        """ TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!! """
 
         if maximizing:
             max_eval = float('-inf')
             for move in self.move_candidates():
                 self.perform_move(move)
-                eval = self.minimax( depth + 1, False)
-                # needs a undo move part I think
+                eval = self.minimax(depth + 1, False)
+                # needs an undo move part I think
                 max_eval = max(max_eval, eval)
             return max_eval
         else:
@@ -659,8 +660,36 @@ class Game:
             for move in self.move_candidates():
                 self.perform_move(move)
                 eval = self.minimax(depth + 1, True)
-                # needs a undo move part I think
+                # needs an undo move part I think
                 min_eval = min(min_eval, eval)
+            return min_eval
+
+    def minimax_with_alpha_beta(self, depth, alpha, beta, maximizing):
+        if self.has_winner() is not None:
+            return self.e1()
+        """ TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!! """
+
+        if maximizing:
+            max_eval = float('-inf')
+            for move in self.move_candidates():
+                self.perform_move(move)
+                eval = self.minimax_with_alpha_beta(depth + 1, alpha, beta, False)
+                # needs an undo move part I think
+                max_eval = max(max_eval, eval)
+                alpha = max(alpha, eval)
+                if beta <= alpha:
+                    break
+            return max_eval
+        else:
+            min_eval = float('inf')
+            for move in self.move_candidates():
+                self.perform_move(move)
+                eval = self.minimax_with_alpha_beta(depth + 1, alpha, beta, True)
+                # needs an undo move part I think
+                min_eval = min(min_eval, eval)
+                beta = min(beta, eval)
+                if beta <= alpha:
+                    break
             return min_eval
 
     def suggest_move(self) -> CoordPair | None:
