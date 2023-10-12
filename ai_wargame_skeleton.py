@@ -642,6 +642,27 @@ class Game:
         return lambda e: (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
                          - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
 
+    def minimax(self, depth, maximizing):
+        if self.has_winner() is not None:
+            return self.e1()  # change to use lambda expression of euristics to  map to e1, 2, or 3 based on options.
+
+        if maximizing:
+            max_eval = float('-inf')
+            for move in self.move_candidates():
+                self.perform_move(move)
+                eval = self.minimax( depth + 1, False)
+                # needs a undo move part I think
+                max_eval = max(max_eval, eval)
+            return max_eval
+        else:
+            min_eval = float('inf')
+            for move in self.move_candidates():
+                self.perform_move(move)
+                eval = self.minimax(depth + 1, True)
+                # needs a undo move part I think
+                min_eval = min(min_eval, eval)
+            return min_eval
+
     def suggest_move(self) -> CoordPair | None:
         """Suggest the next move using minimax alpha beta. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
         start_time = datetime.now()
