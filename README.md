@@ -4,8 +4,9 @@
 #### Teacher: Leila Kosseim
 
 ## Team Members
-- Lucía Cordero Sánchez - [lucia-corsan](https://github.com/lucia-corsan)
 - Alejandro Leonardo García Navarro - [alexgaarciia](https://github.com/alexgaarciia)
+- Lucía Cordero Sánchez - [lucia-corsan](https://github.com/lucia-corsan)
+- Simon Dunand - [SquintyG33Rs](https://github.com/SquintyG33Rs)
 
 ## URL to the repository (private)
 - [https://github.com/alexgaarciia/AIWargame](https://github.com/alexgaarciia/AIWargame)  
