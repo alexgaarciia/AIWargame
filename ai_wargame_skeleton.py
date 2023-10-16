@@ -787,6 +787,17 @@ def main():
     # set up game options
     options = Options(game_type=game_type)
 
+    # override class defaults via command line options
+    if args.max_depth is not None:
+        options.max_depth = args.max_depth
+    if args.max_time is not None:
+        options.max_time = args.max_time
+    if args.max_turns is not None:
+        Options.max_turns = args.max_turns
+    if args.broker is not None:
+        options.broker = args.broker
+
+    # Create file that stores the output:
     fileprint = FileOutput(f'gameTrace-{options.alpha_beta}-{options.max_time}-{options.max_turns}.txt')
 
     # Append the game parameters:
@@ -796,14 +807,6 @@ def main():
     print(f"\tAlpha-beta: {options.alpha_beta}")
     print(f"\tPlayer mode: {options.game_type.name}")
     print("\n")
-
-    # override class defaults via command line options
-    if args.max_depth is not None:
-        options.max_depth = args.max_depth
-    if args.max_time is not None:
-        options.max_time = args.max_time
-    if args.broker is not None:
-        options.broker = args.broker
 
     # Create a new game:
     game = Game(options=options)
