@@ -419,25 +419,25 @@ class Game:
 
         # Check if the current player is the computer based on the game type:
         is_current_player_comp = (
-            (self.options.game_type == GameType.AttackerVsComp and self.next_player == Player.Attacker) or
-            (self.options.game_type == GameType.CompVsDefender and self.next_player == Player.Defender) or
+            (self.options.game_type == GameType.AttackerVsComp and self.next_player == Player.Defender) or
+            (self.options.game_type == GameType.CompVsDefender and self.next_player == Player.Attacker) or
             (self.options.game_type == GameType.CompVsComp))
 
         # Conditional statement to end the game if an AI makes an invalid movement (still does not work):
-        if is_current_player_comp:
-            if not self.is_valid_move(coords):
-                if self.options.game_type == GameType.AttackerVsComp and self.next_player == Player.Attacker:
+        if is_current_player_comp and not self.is_valid_move(coords):
+            if self.options.game_type == GameType.AttackerVsComp and self.next_player == Player.Defender:
+                self._defender_has_ai = False
+            elif self.options.game_type == GameType.CompVsDefender and self.next_player == Player.Attacker:
+                self._attacker_has_ai = False
+            elif self.options.game_type == GameType.CompVsComp:
+                if self.next_player == Player.Defender:
                     self._defender_has_ai = False
-                elif self.options.game_type == GameType.CompVsDefender and self.next_player == Player.Defender:
+                else:
                     self._attacker_has_ai = False
-                elif self.options.game_type == GameType.CompVsComp:
-                    if self.next_player == Player.Defender:
-                        self._attacker_has_ai = False
-                    else:
-                        self._defender_has_ai = False
-                return False, "AI made an invalid move"
-            else:
-                return False, "Invalid move"
+            return False, "AI made an invalid move"
+
+        if not self.is_valid_move(coords):
+            return False, "Invalid move"
 
         # Conditions to perform damage in attack or heal pieces:
         # If destination is not empty and the destination unit is not yours: damage.
@@ -577,8 +577,6 @@ class Game:
         mv = self.suggest_move()
         if mv is not None:
             (success, result) = self.perform_move(mv)
-            print(success)
-            print(result)
             if success:
                 print(f"Computer {self.next_player.name}: ", end='')
                 print(result)
