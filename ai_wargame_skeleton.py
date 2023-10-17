@@ -417,7 +417,25 @@ class Game:
         source = self.get(coords.src)
         destination = self.get(coords.dst)
 
-        # Conditional statement to check whether the movement is valid or not.
+        # Check if the current player is the computer based on the game type:
+        is_current_player_comp = (
+            (self.options.game_type == GameType.AttackerVsComp and self.next_player == Player.Defender) or
+            (self.options.game_type == GameType.CompVsDefender and self.next_player == Player.Attacker) or
+            (self.options.game_type == GameType.CompVsComp))
+
+        # Conditional statement to end the game if an AI makes an invalid movement (still does not work):
+        if is_current_player_comp and not self.is_valid_move(coords):
+            if self.options.game_type == GameType.AttackerVsComp and self.next_player == Player.Defender:
+                self._defender_has_ai = False
+            elif self.options.game_type == GameType.CompVsDefender and self.next_player == Player.Attacker:
+                self._attacker_has_ai = False
+            elif self.options.game_type == GameType.CompVsComp:
+                if self.next_player == Player.Defender:
+                    self._defender_has_ai = False
+                else:
+                    self._attacker_has_ai = False
+            return False, "AI made an invalid move"
+
         if not self.is_valid_move(coords):
             return False, "Invalid move"
 
