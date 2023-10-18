@@ -421,17 +421,20 @@ class Game:
         is_current_player_comp = (
             (self.options.game_type == GameType.AttackerVsComp and self.next_player == Player.Defender) or
             (self.options.game_type == GameType.CompVsDefender and self.next_player == Player.Attacker) or
-            (self.options.game_type == GameType.CompVsComp)
-        )
-        print(f"Current player is ai: {is_current_player_comp}")
+            (self.options.game_type == GameType.CompVsComp))
+
         # Conditional statement to end the game if an AI makes an invalid movement (still does not work):
         if is_current_player_comp and not self.is_valid_move(coords):
-            print("AI made invalid move")
-            if self.next_player == Player.Defender:
+            if self.options.game_type == GameType.AttackerVsComp and self.next_player == Player.Defender:
                 self._defender_has_ai = False
-            else:
+            elif self.options.game_type == GameType.CompVsDefender and self.next_player == Player.Attacker:
                 self._attacker_has_ai = False
-
+            elif self.options.game_type == GameType.CompVsComp:
+                if self.next_player == Player.Defender:
+                    self._defender_has_ai = False
+                else:
+                    self._attacker_has_ai = False
+            return False, "AI made an invalid move"
 
         if not self.is_valid_move(coords):
             return False, "Invalid move"
