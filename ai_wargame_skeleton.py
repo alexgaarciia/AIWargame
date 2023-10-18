@@ -249,7 +249,7 @@ class Options:
     max_depth: int | None = 4
     min_depth: int | None = 2
     max_time: float | None = 5.0
-    game_type: GameType = GameType.AttackerVsDefender
+    game_type: GameType = GameType.CompVsComp
     alpha_beta: bool = True
     max_turns: int | None = 100
     randomize_moves: bool = True
@@ -631,10 +631,10 @@ class Game:
         for i in range(self.options.dim):
             for j in range(self.options.dim):
                 if self.board[i][j] is not None:
-                    count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
+                    count[self.board[i][j].player.value ^ self.next_player.value][self.board[i][j].type.value] += 1
 
         return (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
-                         - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
+                - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
 
     def e1(self):
         count = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
@@ -644,7 +644,7 @@ class Game:
                     count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
 
         return (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
-                         - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
+                - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
 
     def e2(self):
         count = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
@@ -654,9 +654,9 @@ class Game:
                     count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
 
         return (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
-                         - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
+                - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
 
-    def minimax(self, depth=0, maximizing=True, node_count=0, total_depth=0):
+    def minimax(self, depth=1, maximizing=True, node_count=0, total_depth=0):
         node_count += 1  # Increment the node count
         total_depth += depth  # Add the current depth to the total
         if self.has_winner() is not None or depth == self.options.max_depth:
@@ -791,7 +791,7 @@ def main():
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--max_turns', type=float, help='maximum number of turns before game ends')
-    parser.add_argument('--game_type', type=str, default="manual", help='game type: auto|attacker|defender|manual')
+    parser.add_argument('--game_type', type=str, default="auto", help='game type: auto|attacker|defender|manual')
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
 
