@@ -346,7 +346,7 @@ class Game:
                 coords.src == coords.dst):
             return True
         else:
-            print("Warning: You cannot move the Attacker's AI, Firewall and Program down or right")
+            #print("Warning: You cannot move the Attacker's AI, Firewall and Program down or right")
             return False
 
     def check_defender_moves(self, coords: CoordPair):
@@ -356,7 +356,7 @@ class Game:
                 coords.src == coords.dst):
             return True
         else:
-            print("Warning: You cannot move the Defender's AI, Firewall and Program up or left")
+            #print("Warning: You cannot move the Defender's AI, Firewall and Program up or left")
             return False
 
     def is_valid_move(self, coords: CoordPair) -> bool:
@@ -381,12 +381,12 @@ class Game:
                   (self.get(Coord_Left) is not None and unit.player != self.get(Coord_Left).player) or
                   (self.get(Coord_Right) is not None and unit.player != self.get(Coord_Right).player))) and self.get(
             coords.dst) is None):
-            print("Warning: The unit ", unit.type.name, " is engaged in combat")
+            #print("Warning: The unit ", unit.type.name, " is engaged in combat")
             return False
 
         # Conditional statement to check whether the source and destination coordinates are valid.
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
-            print("Warning: Source or destination coordinates are not valid")
+            #print("Warning: Source or destination coordinates are not valid")
             return False
 
         # Conditional statement to check that you cannot move to the diagonals.
@@ -423,7 +423,6 @@ class Game:
             (self.options.game_type == GameType.CompVsDefender and self.next_player == Player.Attacker) or
             (self.options.game_type == GameType.CompVsComp)
         )
-        print(f"Current player is ai: {is_current_player_comp}")
         # Conditional statement to end the game if an AI makes an invalid movement (still does not work):
         if is_current_player_comp and not self.is_valid_move(coords):
             print("AI made invalid move")
@@ -634,7 +633,7 @@ class Game:
                 if self.board[i][j] is not None:
                     count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
 
-        return lambda e: (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
+        return (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
                          - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
 
     def e1(self):
@@ -644,7 +643,7 @@ class Game:
                 if self.board[i][j] is not None:
                     count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
 
-        return lambda e: (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
+        return (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
                          - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
 
     def e2(self):
@@ -654,10 +653,10 @@ class Game:
                 if self.board[i][j] is not None:
                     count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
 
-        return lambda e: (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
+        return (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
                          - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
 
-    def minimax(self, depth=0, maximizing=True, node_count=0, total_depth=0):
+    def minimax(self, depth=0, maximizing=False, node_count=0, total_depth=0):
         node_count += 1  # Increment the node count
         total_depth += depth  # Add the current depth to the total
         if self.has_winner() is not None or depth == self.options.max_depth:
@@ -670,16 +669,16 @@ class Game:
             for move in self.move_candidates():
                 new_game = self.clone()
                 new_game.perform_move(move)
-                this_eval, next_move, avg_depth = new_game.minimax(depth + 1, False, node_count, total_depth)
-                max_eval = max(max_eval, this_eval)
+                eval, next_move, avg_depth = new_game.minimax(depth + 1, False, node_count, total_depth)
+                max_eval = max(max_eval, eval)
             return max_eval, move, avg_depth
         else:
             min_eval = float('inf')
             for move in self.move_candidates():
                 new_game = self.clone()
                 new_game.perform_move(move)
-                this_eval, next_move, avg_depth = new_game.minimax(depth + 1, True, node_count, total_depth)
-                min_eval = min(min_eval, this_eval)
+                eval, next_move, avg_depth = new_game.minimax(depth + 1, True, node_count, total_depth)
+                min_eval = min(min_eval, eval)
             return min_eval, move, avg_depth
 
     def minimax_with_alpha_beta(self, depth, alpha, beta, maximizing):
