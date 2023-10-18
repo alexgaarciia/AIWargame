@@ -656,30 +656,34 @@ class Game:
         return (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
                          - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
 
-    def minimax(self, depth=0, maximizing=False, node_count=0, total_depth=0):
+    def minimax(self, depth=0, maximizing=True, node_count=0, total_depth=0):
         node_count += 1  # Increment the node count
         total_depth += depth  # Add the current depth to the total
         if self.has_winner() is not None or depth == self.options.max_depth:
             avg_depth = total_depth / node_count
-            return self.e1(), None, avg_depth
+            return self.e0(), None, avg_depth
         """ TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!! """
-
+        best_move = None
         if maximizing:
             max_eval = float('-inf')
             for move in self.move_candidates():
                 new_game = self.clone()
                 new_game.perform_move(move)
                 eval, next_move, avg_depth = new_game.minimax(depth + 1, False, node_count, total_depth)
-                max_eval = max(max_eval, eval)
-            return max_eval, move, avg_depth
+                if eval > max_eval:
+                    max_eval = eval
+                    best_move = move  # Update best_move
+            return max_eval, best_move, avg_depth
         else:
             min_eval = float('inf')
             for move in self.move_candidates():
                 new_game = self.clone()
                 new_game.perform_move(move)
                 eval, next_move, avg_depth = new_game.minimax(depth + 1, True, node_count, total_depth)
-                min_eval = min(min_eval, eval)
-            return min_eval, move, avg_depth
+                if eval > min_eval:
+                    min_eval = eval
+                    best_move = move  # Update best_move
+            return min_eval, best_move, avg_depth
 
     def minimax_with_alpha_beta(self, depth, alpha, beta, maximizing):
         if self.has_winner() is not None:
