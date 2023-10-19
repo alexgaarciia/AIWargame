@@ -362,8 +362,7 @@ class Game:
     def is_valid_move(self, coords: CoordPair) -> bool:
         """Validate a move expressed as a CoordPair."""
         # Definition of useful variables:
-        src_unit = self.get(coords.src)  # Tells us what is in those coordinates.
-        dst_unit = self.get(coords.dst)  # Tells us what is in those coordinates.
+        unit = self.get(coords.src)  # Tells us what is in those coordinates.
         Coord_Up = Coord(coords.src.row - 1, coords.src.col)  # Coordinate above the source unit.
         Coord_Down = Coord(coords.src.row + 1, coords.src.col)  # Coordinate below the source unit.
         Coord_Left = Coord(coords.src.row, coords.src.col - 1)  # Coordinate to the left of the source unit.
@@ -371,17 +370,16 @@ class Game:
 
         # Conditional statement to check whether there is a unit at the source coordinate or you are trying to move
         # the next player's units.
-        if src_unit is None or src_unit.player != self.next_player:
+        if unit is None or unit.player != self.next_player:
             print("Warning: You cannot move the opponent's unit or there is no unit in the source cell")
             return False
 
         # Conditional statement for "engaged in combat" condition.
-        if (((src_unit.type == UnitType.AI or src_unit.type == UnitType.Firewall or src_unit.type == UnitType.Program)
-             and ((self.get(Coord_Up) is not None and src_unit.player != self.get(Coord_Up).player) or
-                  (self.get(Coord_Down) is not None and src_unit.player != self.get(Coord_Down).player) or
-                  (self.get(Coord_Left) is not None and src_unit.player != self.get(Coord_Left).player) or
-                  (self.get(Coord_Right) is not None and src_unit.player != self.get(Coord_Right).player))) and self.get(
-            coords.dst) is None):
+        if (((unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program)
+             and ((self.get(Coord_Up) is not None and unit.player != self.get(Coord_Up).player) or
+                  (self.get(Coord_Down) is not None and unit.player != self.get(Coord_Down).player) or
+                  (self.get(Coord_Left) is not None and unit.player != self.get(Coord_Left).player) or
+                  (self.get(Coord_Right) is not None and unit.player != self.get(Coord_Right).player))) and self.get(coords.dst) is None):
             #print("Warning: The unit ", unit.type.name, " is engaged in combat")
             return False
 
@@ -402,21 +400,13 @@ class Game:
 
         # Configuration of allowed movements of the attacker:
         if (
-                src_unit.type == UnitType.AI or src_unit.type == UnitType.Firewall or src_unit.type == UnitType.Program) and src_unit.player == Player.Attacker:
+                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Attacker:
             return self.check_attacker_moves(coords)
 
         # Configuration of allowed movements of the defender:
         if (
-                src_unit.type == UnitType.AI or src_unit.type == UnitType.Firewall or src_unit.type == UnitType.Program) and src_unit.player == Player.Defender:
+                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
             return self.check_defender_moves(coords)
-
-        # Configuration to validate if a repair is valid:
-        if dst_unit is not None:
-            if src_unit.player == dst_unit.player:
-                """ repair conditions --unit.repair_table != 0 && health < 9 """
-                if not (dst_unit.health < 9 and src_unit.repair_amount(dst_unit) != 0):
-                    return False
-
         return True
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
@@ -431,16 +421,14 @@ class Game:
             (self.options.game_type == GameType.CompVsDefender and self.next_player == Player.Attacker) or
             (self.options.game_type == GameType.CompVsComp)
         )
-        # Conditional statement to end the game if an AI makes an invalid movement (still does not work):
-        if is_current_player_comp and not self.is_valid_move(coords):
-            print("AI made invalid move")
-            if self.next_player == Player.Defender:
-                self._defender_has_ai = False
-            else:
-                self._attacker_has_ai = False
-
 
         if not self.is_valid_move(coords):
+            if is_current_player_comp:
+                print(f"AI made invalid move : {coords.to_string()} killing {self.next_player}")
+                if self.next_player == Player.Defender:
+                    self._defender_has_ai = False
+                else:
+                    self._attacker_has_ai = False
             return False, "Invalid move"
 
         # Conditions to perform damage in attack or heal pieces:
@@ -494,6 +482,9 @@ class Game:
                     return False, "Invalid move: you cannot repair a fully healed unit or you don't have healing power"
                 else:
                     destination.mod_health(healing_amount)
+
+        # Conditional statement to end the game if an AI makes an invalid movement (still does not work):
+
         return True, str(coords)
 
     def next_turn(self):
@@ -679,32 +670,29 @@ class Game:
         if self.has_winner() is not None or depth >= self.options.max_depth:
             avg_depth = total_depth / node_count
             score = self.e0()
-            print(score)
             return score, None, avg_depth
         """ TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!! """
         best_move = None
         if maximizing:
             max_eval = float('-inf')
             for move in self.move_candidates():
-                print(move.to_string())
                 new_game = self.clone()
                 new_game.perform_move(move)
                 eval, _, avg_depth = new_game.minimax(depth + 1, False, node_count, total_depth)
                 if eval > max_eval:
                     max_eval = eval
-                    print(f"new bestmove maximum found {move.to_string()} with score { eval }")
+                    # print(f"new bestmove maximum found {move.to_string()} with score { eval }")
                     best_move = move  # Update best_move
             return max_eval, best_move, avg_depth
         else:
             min_eval = float('inf')
             for move in self.move_candidates():
-                print(move.to_string())
                 new_game = self.clone()
                 new_game.perform_move(move)
                 eval, _, avg_depth = new_game.minimax(depth + 1, True, node_count, total_depth)
                 if eval < min_eval:
                     min_eval = eval
-                    print(f"new bestmove minimum found {move.to_string()} with score { eval }")
+                    # print(f"new bestmove minimum found {move.to_string()} with score { eval }")
                     best_move = move  # Update best_move
             return min_eval, best_move, avg_depth
 
@@ -740,9 +728,12 @@ class Game:
         """Suggest the next move using minimax alpha beta. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
         start_time = datetime.now()
         (score, move, avg_depth) = self.minimax()
+        print(move.to_string())
+        # reverting invalid move killing from minimax because only board is deepcopied in the game not the other member variables
+        self._defender_has_ai = True
+        self._attacker_has_ai = True
         elapsed_seconds = (datetime.now() - start_time).total_seconds()
         self.stats.total_seconds += elapsed_seconds
-        print(move.to_string())
         print(f"Heuristic score: {score}")
         print(f"Average recursive depth: {avg_depth:0.1f}")
         print(f"Evals per depth: ", end='')
@@ -815,7 +806,7 @@ def main():
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--max_turns', type=float, help='maximum number of turns before game ends')
-    parser.add_argument('--game_type', type=str, default="auto", help='game type: auto|attacker|defender|manual')
+    parser.add_argument('--game_type', type=str, default="attacker", help='game type: auto|attacker|defender|manual')
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
 
