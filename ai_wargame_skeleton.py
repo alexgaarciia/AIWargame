@@ -362,7 +362,8 @@ class Game:
     def is_valid_move(self, coords: CoordPair) -> bool:
         """Validate a move expressed as a CoordPair."""
         # Definition of useful variables:
-        unit = self.get(coords.src)  # Tells us what is in those coordinates.
+        src_unit = self.get(coords.src)  # Tells us what is in those coordinates.
+        dst_unit = self.get(coords.dst)  # Tells us what is in those coordinates.
         Coord_Up = Coord(coords.src.row - 1, coords.src.col)  # Coordinate above the source unit.
         Coord_Down = Coord(coords.src.row + 1, coords.src.col)  # Coordinate below the source unit.
         Coord_Left = Coord(coords.src.row, coords.src.col - 1)  # Coordinate to the left of the source unit.
@@ -370,16 +371,16 @@ class Game:
 
         # Conditional statement to check whether there is a unit at the source coordinate or you are trying to move
         # the next player's units.
-        if unit is None or unit.player != self.next_player:
+        if src_unit is None or src_unit.player != self.next_player:
             print("Warning: You cannot move the opponent's unit or there is no unit in the source cell")
             return False
 
         # Conditional statement for "engaged in combat" condition.
-        if (((unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program)
-             and ((self.get(Coord_Up) is not None and unit.player != self.get(Coord_Up).player) or
-                  (self.get(Coord_Down) is not None and unit.player != self.get(Coord_Down).player) or
-                  (self.get(Coord_Left) is not None and unit.player != self.get(Coord_Left).player) or
-                  (self.get(Coord_Right) is not None and unit.player != self.get(Coord_Right).player))) and self.get(
+        if (((src_unit.type == UnitType.AI or src_unit.type == UnitType.Firewall or src_unit.type == UnitType.Program)
+             and ((self.get(Coord_Up) is not None and src_unit.player != self.get(Coord_Up).player) or
+                  (self.get(Coord_Down) is not None and src_unit.player != self.get(Coord_Down).player) or
+                  (self.get(Coord_Left) is not None and src_unit.player != self.get(Coord_Left).player) or
+                  (self.get(Coord_Right) is not None and src_unit.player != self.get(Coord_Right).player))) and self.get(
             coords.dst) is None):
             #print("Warning: The unit ", unit.type.name, " is engaged in combat")
             return False
@@ -401,13 +402,19 @@ class Game:
 
         # Configuration of allowed movements of the attacker:
         if (
-                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Attacker:
+                src_unit.type == UnitType.AI or src_unit.type == UnitType.Firewall or src_unit.type == UnitType.Program) and src_unit.player == Player.Attacker:
             return self.check_attacker_moves(coords)
 
         # Configuration of allowed movements of the defender:
         if (
-                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
+                src_unit.type == UnitType.AI or src_unit.type == UnitType.Firewall or src_unit.type == UnitType.Program) and src_unit.player == Player.Defender:
             return self.check_defender_moves(coords)
+
+        # Configuration to validate if a repair is valid:
+        if src_unit.player == dst_unit.player:
+            """ repair conditions --unit.repair_table != 0 && health < 9 """
+            if not (dst_unit.health < 9 and src_unit.repair_amount(dst_unit) != 0):
+                return False
 
         return True
 
@@ -633,8 +640,11 @@ class Game:
                 if self.board[i][j] is not None:
                     count[self.board[i][j].player.value ^ self.next_player.value][self.board[i][j].type.value] += 1
 
-        return (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
-                - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
+        return (
+                3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]
+        ) - (
+                3 * count[1][1] + 3 * count[1][2] + 3 * count[1][3] + 3 * count[1][4] + 9999 * count[1][0]
+        )
 
     def e1(self):
         count = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
@@ -643,8 +653,11 @@ class Game:
                 if self.board[i][j] is not None:
                     count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
 
-        return (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
-                - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
+        return (
+                3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]
+        ) - (
+                3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0]
+        )
 
     def e2(self):
         count = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
@@ -653,35 +666,44 @@ class Game:
                 if self.board[i][j] is not None:
                     count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
 
-        return (3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]) \
-                - (3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0])
+        return (
+                3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]
+        ) - (
+                3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0]
+        )
 
     def minimax(self, depth=1, maximizing=True, node_count=0, total_depth=0):
         node_count += 1  # Increment the node count
         total_depth += depth  # Add the current depth to the total
-        if self.has_winner() is not None or depth == self.options.max_depth:
+        if self.has_winner() is not None or depth >= self.options.max_depth:
             avg_depth = total_depth / node_count
-            return self.e0(), None, avg_depth
+            score = self.e0()
+            print(score)
+            return score, None, avg_depth
         """ TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!! """
         best_move = None
         if maximizing:
             max_eval = float('-inf')
             for move in self.move_candidates():
+                print(move.to_string())
                 new_game = self.clone()
                 new_game.perform_move(move)
-                eval, next_move, avg_depth = new_game.minimax(depth + 1, False, node_count, total_depth)
+                eval, _, avg_depth = new_game.minimax(depth + 1, False, node_count, total_depth)
                 if eval > max_eval:
                     max_eval = eval
+                    print(f"new bestmove maximum found {move.to_string()} with score { eval }")
                     best_move = move  # Update best_move
             return max_eval, best_move, avg_depth
         else:
             min_eval = float('inf')
             for move in self.move_candidates():
+                print(move.to_string())
                 new_game = self.clone()
                 new_game.perform_move(move)
-                eval, next_move, avg_depth = new_game.minimax(depth + 1, True, node_count, total_depth)
-                if eval > min_eval:
+                eval, _, avg_depth = new_game.minimax(depth + 1, True, node_count, total_depth)
+                if eval < min_eval:
                     min_eval = eval
+                    print(f"new bestmove minimum found {move.to_string()} with score { eval }")
                     best_move = move  # Update best_move
             return min_eval, best_move, avg_depth
 
@@ -719,6 +741,7 @@ class Game:
         (score, move, avg_depth) = self.minimax()
         elapsed_seconds = (datetime.now() - start_time).total_seconds()
         self.stats.total_seconds += elapsed_seconds
+        print(move.to_string())
         print(f"Heuristic score: {score}")
         print(f"Average recursive depth: {avg_depth:0.1f}")
         print(f"Evals per depth: ", end='')
