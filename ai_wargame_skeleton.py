@@ -402,12 +402,14 @@ class Game:
         # Configuration of allowed movements of the attacker:
         if (
                 unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Attacker:
-            return self.check_attacker_moves(coords)
+            if not self.check_attacker_moves(coords):
+                return False
 
         # Configuration of allowed movements of the defender:
         if (
                 unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
-            return self.check_defender_moves(coords)
+            if not self.check_defender_moves(coords):
+                return False
 
         if dst_unit is not None:
             if unit.player == dst_unit.player:
@@ -416,7 +418,6 @@ class Game:
                     return True
                 healing_amount = unit.repair_amount(dst_unit)
                 if healing_amount == 0:
-                    # this isn't working for some reason TODO fix it?
                     return False
         return True
 
