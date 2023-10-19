@@ -479,6 +479,12 @@ class Game:
 
                 # Necessary condition to check if you cannot heal (two options: either the unit is fully healed or you cannot heal it).
                 if healing_amount == 0:
+                    if is_current_player_comp:
+                        print(f"AI made invalid move : {coords.to_string()} killing {self.next_player}")
+                        if self.next_player == Player.Defender:
+                            self._defender_has_ai = False
+                        else:
+                            self._attacker_has_ai = False
                     return False, "Invalid move: you cannot repair a fully healed unit or you don't have healing power"
                 else:
                     destination.mod_health(healing_amount)
