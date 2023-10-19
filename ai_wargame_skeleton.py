@@ -346,7 +346,7 @@ class Game:
                 coords.src == coords.dst):
             return True
         else:
-            #print("Warning: You cannot move the Attacker's AI, Firewall and Program down or right")
+            # print("Warning: You cannot move the Attacker's AI, Firewall and Program down or right")
             return False
 
     def check_defender_moves(self, coords: CoordPair):
@@ -356,7 +356,7 @@ class Game:
                 coords.src == coords.dst):
             return True
         else:
-            #print("Warning: You cannot move the Defender's AI, Firewall and Program up or left")
+            # print("Warning: You cannot move the Defender's AI, Firewall and Program up or left")
             return False
 
     def is_valid_move(self, coords: CoordPair) -> bool:
@@ -380,13 +380,14 @@ class Game:
              and ((self.get(Coord_Up) is not None and unit.player != self.get(Coord_Up).player) or
                   (self.get(Coord_Down) is not None and unit.player != self.get(Coord_Down).player) or
                   (self.get(Coord_Left) is not None and unit.player != self.get(Coord_Left).player) or
-                  (self.get(Coord_Right) is not None and unit.player != self.get(Coord_Right).player))) and self.get(coords.dst) is None):
-            #print("Warning: The unit ", unit.type.name, " is engaged in combat")
+                  (self.get(Coord_Right) is not None and unit.player != self.get(Coord_Right).player))) and self.get(
+            coords.dst) is None):
+            # print("Warning: The unit ", unit.type.name, " is engaged in combat")
             return False
 
         # Conditional statement to check whether the source and destination coordinates are valid.
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
-            #print("Warning: Source or destination coordinates are not valid")
+            # print("Warning: Source or destination coordinates are not valid")
             return False
 
         # Conditional statement to check that you cannot move to the diagonals.
@@ -410,7 +411,7 @@ class Game:
                 unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
             if not self.check_defender_moves(coords):
                 return False
-
+        # TODO fix invalid moves slipping through these checks!!! (empty locations , ennemy units , and also 0 healing are passing)
         if dst_unit is not None:
             if unit.player == dst_unit.player:
                 """ repair conditions --unit.repair_table != 0 && health < 9 """
@@ -429,9 +430,9 @@ class Game:
 
         # Check if the current player is the computer based on the game type:
         is_current_player_comp = (
-            (self.options.game_type == GameType.AttackerVsComp and self.next_player == Player.Defender) or
-            (self.options.game_type == GameType.CompVsDefender and self.next_player == Player.Attacker) or
-            (self.options.game_type == GameType.CompVsComp)
+                (self.options.game_type == GameType.AttackerVsComp and self.next_player == Player.Defender) or
+                (self.options.game_type == GameType.CompVsDefender and self.next_player == Player.Attacker) or
+                (self.options.game_type == GameType.CompVsComp)
         )
 
         if not self.is_valid_move(coords):
@@ -699,7 +700,7 @@ class Game:
                 eval, _, avg_depth = new_game.minimax(depth + 1, False, node_count, total_depth)
                 if eval > max_eval:
                     max_eval = eval
-                    # print(f"new bestmove maximum found {move.to_string()} with score { eval }")
+                    print(f"new bestmove maximum found {move.to_string()} with score {eval}")
                     best_move = move  # Update best_move
             return max_eval, best_move, avg_depth
         else:
@@ -710,7 +711,7 @@ class Game:
                 eval, _, avg_depth = new_game.minimax(depth + 1, True, node_count, total_depth)
                 if eval < min_eval:
                     min_eval = eval
-                    # print(f"new bestmove minimum found {move.to_string()} with score { eval }")
+                    print(f"new bestmove minimum found {move.to_string()} with score {eval}")
                     best_move = move  # Update best_move
             return min_eval, best_move, avg_depth
 
