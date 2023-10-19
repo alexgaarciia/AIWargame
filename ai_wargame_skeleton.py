@@ -411,10 +411,11 @@ class Game:
             return self.check_defender_moves(coords)
 
         # Configuration to validate if a repair is valid:
-        if src_unit.player == dst_unit.player:
-            """ repair conditions --unit.repair_table != 0 && health < 9 """
-            if not (dst_unit.health < 9 and src_unit.repair_amount(dst_unit) != 0):
-                return False
+        if dst_unit is not None:
+            if src_unit.player == dst_unit.player:
+                """ repair conditions --unit.repair_table != 0 && health < 9 """
+                if not (dst_unit.health < 9 and src_unit.repair_amount(dst_unit) != 0):
+                    return False
 
         return True
 
