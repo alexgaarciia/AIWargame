@@ -652,10 +652,8 @@ class Game:
                 3 * count[1][1] + 3 * count[1][2] + 3 * count[1][3] + 3 * count[1][4] + 9999 * count[1][0]
         ))
 
-    def minimax(self, depth=0, maximizing=True, node_count=0) -> Tuple[float, CoordPair | None]:
-        node_count += 1  # Increment the node count
+    def minimax(self, depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
         if self.has_winner() is not None or depth >= self.options.max_depth:
-            print(f" node count at this leaf : {node_count}")
             score = self.e0()
             return score, None
         # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
@@ -663,32 +661,26 @@ class Game:
         if maximizing:
             max_eval = float('-inf')
             for move in self.move_candidates():
-                fileprint.suppress_output = False
                 # print(move.to_string())
                 new_game = self.clone()
                 new_game.perform_move(move)
-                eval, _ = new_game.minimax(depth + 1, False, node_count)
+                eval, _ = new_game.minimax(depth + 1, not maximizing)
                 if eval > max_eval:
                     max_eval = eval
-                    fileprint.suppress_output = False
                     print(f"new bestmove MAXIMUM found {move.to_string()} with score {eval}")
-                    best_move = move  # Update best_move
-                fileprint.suppress_output = True
+                    best_move = move.clone()  # Update best_move
             return max_eval, best_move
         else:
             min_eval = float('inf')
             for move in self.move_candidates():
-                fileprint.suppress_output = False
                 # print(move.to_string())
                 new_game = self.clone()
                 new_game.perform_move(move)
-                eval, _ = new_game.minimax(depth + 1, True, node_count)
+                eval, _ = new_game.minimax(depth + 1, not maximizing)
                 if eval < min_eval:
                     min_eval = eval
-                    fileprint.suppress_output = False
                     print(f"new bestmove MINIMUM found {move.to_string()} with score {eval}")
-                    best_move = move  # Update best_move
-                fileprint.suppress_output = True
+                    best_move = move.clone()  # Update best_move
             return min_eval, best_move
 
     def minimax_with_alpha_beta(self, depth, alpha, beta, maximizing):
