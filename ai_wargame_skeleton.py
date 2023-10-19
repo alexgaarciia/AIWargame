@@ -306,8 +306,7 @@ class Game:
 
         Shallow copy of everything except the board (options and stats are shared).
         """
-        new = copy.copy(self)
-        new.board = copy.deepcopy(self.board)
+        new = copy.deepcopy(self)
         return new
 
     def is_empty(self, coord: Coord) -> bool:
@@ -644,13 +643,16 @@ class Game:
         for i in range(self.options.dim):
             for j in range(self.options.dim):
                 if self.board[i][j] is not None:
-                    count[self.board[i][j].player.value ^ self.next_player.value][self.board[i][j].type.value] += 1
-
-        return float((
+                    count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
+        heuristic = float(((
                 3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]
         ) - (
                 3 * count[1][1] + 3 * count[1][2] + 3 * count[1][3] + 3 * count[1][4] + 9999 * count[1][0]
-        ))
+        )) * (-1 if self.next_player.value == 1 else 1))
+        fileprint.suppress_output = False
+        print(f"e is {heuristic} for player {self.next_player}")
+        fileprint.suppress_output = True
+        return heuristic
 
     def minimax(self, depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
         if self.has_winner() is not None or depth >= self.options.max_depth:
@@ -660,8 +662,9 @@ class Game:
         best_move = None
         new_game = self.clone()
         all_moves = self.move_candidates()
+        min_eval = float('inf')
+        max_eval = float('-inf')
         if maximizing:
-            max_eval = float('-inf')
             for move in all_moves:
                 new_game.perform_move(move.clone())
                 eval, _ = new_game.minimax(depth + 1, not maximizing)
@@ -671,7 +674,6 @@ class Game:
                     best_move = move.clone()  # Update best_move
             return max_eval, best_move
         else:
-            min_eval = float('inf')
             for move in all_moves:
                 new_game.perform_move(move.clone())
                 eval, _ = new_game.minimax(depth + 1, not maximizing)
