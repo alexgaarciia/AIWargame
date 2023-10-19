@@ -416,7 +416,7 @@ class Game:
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
             print(f"coordinates out of bounds {coords.to_string()}\n")
             return False
-        elif abs(coords.dst.row - coords.src.row) <= 1 and abs(coords.dst.col - coords.src.col) <= 1:
+        elif not (abs(coords.dst.row - coords.src.row) > 1 and abs(coords.dst.col - coords.src.col) > 1):
             """Valid move distance"""
             if coords.dst == coords.src:
                 """self destruct"""
@@ -658,12 +658,12 @@ class Game:
             return score, None
         # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
         best_move = None
+        new_game = self.clone()
+        all_moves = self.move_candidates()
         if maximizing:
             max_eval = float('-inf')
-            for move in self.move_candidates():
-                # print(move.to_string())
-                new_game = self.clone()
-                new_game.perform_move(move)
+            for move in all_moves:
+                new_game.perform_move(move.clone())
                 eval, _ = new_game.minimax(depth + 1, not maximizing)
                 if eval > max_eval:
                     max_eval = eval
@@ -672,10 +672,8 @@ class Game:
             return max_eval, best_move
         else:
             min_eval = float('inf')
-            for move in self.move_candidates():
-                # print(move.to_string())
-                new_game = self.clone()
-                new_game.perform_move(move)
+            for move in all_moves:
+                new_game.perform_move(move.clone())
                 eval, _ = new_game.minimax(depth + 1, not maximizing)
                 if eval < min_eval:
                     min_eval = eval
