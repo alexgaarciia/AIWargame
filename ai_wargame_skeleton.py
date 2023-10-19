@@ -210,7 +210,7 @@ class CoordPair:
 
     def clone(self) -> CoordPair:
         """Clones a CoordPair."""
-        return copy.copy(self)
+        return copy.deepcopy(self)
 
     def iter_rectangle(self) -> Iterable[Coord]:
         """Iterates over cells of a rectangular area."""
@@ -415,7 +415,7 @@ class Game:
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
             print(f"coordinates out of bounds {coords.to_string()}\n")
             return False
-        elif not (abs(coords.dst.row - coords.src.row) > 1 and abs(coords.dst.col - coords.src.col) > 1):
+        elif not (abs(coords.dst.row - coords.src.row) == 1 and abs(coords.dst.col - coords.src.col) == 1):
             """Valid move distance"""
             if coords.dst == coords.src:
                 """self destruct"""
@@ -670,7 +670,9 @@ class Game:
                 eval, _ = new_game.minimax(depth + 1, not maximizing)
                 if eval > max_eval:
                     max_eval = eval
+                    fileprint.suppress_output = False
                     print(f"new bestmove MAXIMUM found {move.to_string()} with score {eval}")
+                    fileprint.suppress_output = True
                     best_move = move.clone()  # Update best_move
             return max_eval, best_move
         else:
@@ -679,7 +681,9 @@ class Game:
                 eval, _ = new_game.minimax(depth + 1, not maximizing)
                 if eval < min_eval:
                     min_eval = eval
+                    fileprint.suppress_output = False
                     print(f"new bestmove MINIMUM found {move.to_string()} with score {eval}")
+                    fileprint.suppress_output = True
                     best_move = move.clone()  # Update best_move
             return min_eval, best_move
 
