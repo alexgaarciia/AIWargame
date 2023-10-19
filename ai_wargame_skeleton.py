@@ -15,20 +15,25 @@ import sys
 MAX_HEURISTIC_SCORE = 2000000000
 MIN_HEURISTIC_SCORE = -2000000000
 
+fileprint = None
+
 
 class FileOutput:
     def __init__(self, file_name):
         self.file = open(file_name, 'w')
         self.stdout = sys.stdout
         sys.stdout = self
+        self.suppress_output = False  # New flag to control output
 
     def write(self, text):
-        self.file.write(text)
-        self.stdout.write(text)
+        if not self.suppress_output:
+            self.file.write(text)
+            self.stdout.write(text)
 
     def flush(self):
-        self.file.flush()
-        self.stdout.flush()
+        if not self.suppress_output:
+            self.file.flush()
+            self.stdout.flush()
 
     def close(self):
         sys.stdout = self.stdout
@@ -746,7 +751,9 @@ class Game:
     def suggest_move(self) -> CoordPair | None:
         """Suggest the next move using minimax alpha beta. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
         start_time = datetime.now()
+        fileprint.suppress_output = True
         (score, move, avg_depth) = self.minimax()
+        fileprint.suppress_output = False
         print(move.to_string())
         # reverting invalid move killing from minimax because only board is deepcopied in the game not the other member variables
         self._defender_has_ai = True
@@ -853,6 +860,8 @@ def main():
         options.broker = args.broker
 
     # Create file that stores the output:
+
+    global fileprint
     fileprint = FileOutput(f'gameTrace-{options.alpha_beta}-{options.max_time}-{options.max_turns}.txt')
 
     # Append the game parameters:
