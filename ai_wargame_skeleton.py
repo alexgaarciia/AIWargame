@@ -363,6 +363,7 @@ class Game:
         """Validate a move expressed as a CoordPair."""
         # Definition of useful variables:
         unit = self.get(coords.src)  # Tells us what is in those coordinates.
+        dst_unit = self.get(coords.dst)
         Coord_Up = Coord(coords.src.row - 1, coords.src.col)  # Coordinate above the source unit.
         Coord_Down = Coord(coords.src.row + 1, coords.src.col)  # Coordinate below the source unit.
         Coord_Left = Coord(coords.src.row, coords.src.col - 1)  # Coordinate to the left of the source unit.
@@ -407,6 +408,16 @@ class Game:
         if (
                 unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
             return self.check_defender_moves(coords)
+
+        if dst_unit is not None:
+            if unit.player == dst_unit.player:
+                """ repair conditions --unit.repair_table != 0 && health < 9 """
+                if coords.src == coords.dst:
+                    return True
+                healing_amount = unit.repair_amount(dst_unit)
+                if healing_amount == 0:
+                    # this isn't working for some reason TODO fix it?
+                    return False
         return True
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
@@ -425,10 +436,7 @@ class Game:
         if not self.is_valid_move(coords):
             if is_current_player_comp:
                 print(f"AI made invalid move : {coords.to_string()} killing {self.next_player}")
-                if self.next_player == Player.Defender:
-                    self._defender_has_ai = False
-                else:
-                    self._attacker_has_ai = False
+                self.kill_current_player_AI()
             return False, "Invalid move"
 
         # Conditions to perform damage in attack or heal pieces:
@@ -480,11 +488,8 @@ class Game:
                 # Necessary condition to check if you cannot heal (two options: either the unit is fully healed or you cannot heal it).
                 if healing_amount == 0:
                     if is_current_player_comp:
-                        print(f"AI made invalid move : {coords.to_string()} killing {self.next_player}")
-                        if self.next_player == Player.Defender:
-                            self._defender_has_ai = False
-                        else:
-                            self._attacker_has_ai = False
+                        print("   !!!!   THIS CODE BLOCK SHOULD NEVER BE ACCESSIBLE   !!!!   ")
+                        self.kill_current_player_AI()
                     return False, "Invalid move: you cannot repair a fully healed unit or you don't have healing power"
                 else:
                     destination.mod_health(healing_amount)
@@ -492,6 +497,12 @@ class Game:
         # Conditional statement to end the game if an AI makes an invalid movement (still does not work):
 
         return True, str(coords)
+
+    def kill_current_player_AI(self):
+        for (src, unit) in self.player_units(self.next_player):
+            if unit.type == UnitType.AI:
+                unit.mod_health(-9)
+                self.remove_dead(src)
 
     def next_turn(self):
         """Transitions game to the next turn."""
@@ -812,7 +823,7 @@ def main():
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--max_turns', type=float, help='maximum number of turns before game ends')
-    parser.add_argument('--game_type', type=str, default="attacker", help='game type: auto|attacker|defender|manual')
+    parser.add_argument('--game_type', type=str, default="auto", help='game type: auto|attacker|defender|manual')
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
 
