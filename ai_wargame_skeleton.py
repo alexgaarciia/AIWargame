@@ -351,7 +351,7 @@ class Game:
                 coords.src == coords.dst):
             return True
         else:
-            # print("Warning: You cannot move the Attacker's AI, Firewall and Program down or right")
+            print("Warning: You cannot move the Attacker's AI, Firewall and Program down or right\n")
             return False
 
     def check_defender_moves(self, coords: CoordPair):
@@ -361,70 +361,71 @@ class Game:
                 coords.src == coords.dst):
             return True
         else:
-            # print("Warning: You cannot move the Defender's AI, Firewall and Program up or left")
+            print("Warning: You cannot move the Defender's AI, Firewall and Program up or left\n")
             return False
+
+    def all_other_conditions(self, coords: CoordPair):
+        src_unit = self.get(coords.src)
+        dst_unit = self.get(coords.dst)
+
+        if dst_unit is None:
+            """ movement conditions --only out of combat for A F P --only 'outwards' for A F P """
+            match src_unit.type:
+                case UnitType.Virus:
+                    return True
+                case UnitType.Tech:
+                    return True
+                case _:
+                    """ check outwards, check combat """
+                    if src_unit.player == Player.Attacker:
+                        if self.check_attacker_moves(coords):
+                            for adjacent in coords.src.iter_adjacent():
+                                if self.get(adjacent) is not None and self.get(adjacent).player != src_unit.player:
+                                    print(f"Unit locked in Combat, cannot move! {src_unit.to_string()} at {coords.src.to_string()}\n")
+                                    return False
+                        else:
+                            return False
+                    elif self.check_defender_moves(coords):
+                        for adjacent in coords.src.iter_adjacent():
+                            if self.get(adjacent) is not None and self.get(adjacent).player != src_unit.player:
+                                print(f"Unit locked in Combat, cannot move! {src_unit.to_string()}\n")
+                                return False
+                        else:
+                            return False
+                    return True
+
+        if src_unit.player != dst_unit.player:
+            """ attack conditions """
+            return True
+        if src_unit.player == dst_unit.player:
+            """ repair conditions --unit.repair_table != 0 && health < 9 """
+            if dst_unit.health < 9 and src_unit.repair_amount(dst_unit) != 0:
+                return True
+            else:
+                print(f"Invalid Healing target! from {src_unit.to_string()} to {dst_unit.to_string()} at {coords.dst.to_string()}\n")
+        return False
 
     def is_valid_move(self, coords: CoordPair) -> bool:
         """Validate a move expressed as a CoordPair."""
-        # Definition of useful variables:
-        unit = self.get(coords.src)  # Tells us what is in those coordinates.
-        dst_unit = self.get(coords.dst)
-        Coord_Up = Coord(coords.src.row - 1, coords.src.col)  # Coordinate above the source unit.
-        Coord_Down = Coord(coords.src.row + 1, coords.src.col)  # Coordinate below the source unit.
-        Coord_Left = Coord(coords.src.row, coords.src.col - 1)  # Coordinate to the left of the source unit.
-        Coord_Right = Coord(coords.src.row, coords.src.col + 1)  # Coordinate to the right of the source unit.
-
-        # Conditional statement to check whether there is a unit at the source coordinate or you are trying to move
-        # the next player's units.
+        # TODO debug fully to make sure this never returns wrong
+        unit = self.get(coords.src)
         if unit is None or unit.player != self.next_player:
-            print("Warning: You cannot move the opponent's unit or there is no unit in the source cell")
+            print("empty source or enemy unit selected\n")
             return False
 
-        # Conditional statement for "engaged in combat" condition.
-        if (((unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program)
-             and ((self.get(Coord_Up) is not None and unit.player != self.get(Coord_Up).player) or
-                  (self.get(Coord_Down) is not None and unit.player != self.get(Coord_Down).player) or
-                  (self.get(Coord_Left) is not None and unit.player != self.get(Coord_Left).player) or
-                  (self.get(Coord_Right) is not None and unit.player != self.get(Coord_Right).player))) and self.get(
-            coords.dst) is None):
-            # print("Warning: The unit ", unit.type.name, " is engaged in combat")
-            return False
-
-        # Conditional statement to check whether the source and destination coordinates are valid.
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
-            # print("Warning: Source or destination coordinates are not valid")
+            print(f"coordinates out of bounds {coords.to_string()}\n")
             return False
-
-        # Conditional statement to check that you cannot move to the diagonals.
-        if coords.src.row != coords.dst.row and coords.src.col != coords.dst.col:
-            print("Warning: You cannot move to the diagonals")
-            return False
-
-        # Conditional statement to check that you only move one step (or stay the same):
-        if (abs(coords.src.col - coords.dst.col) > 1) or (abs(coords.src.row - coords.dst.row) > 1):
-            print("Warning: You can only move one step at a time")
-            return False
-
-        # Configuration of allowed movements of the attacker:
-        if (
-                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Attacker:
-            if not self.check_attacker_moves(coords):
+        elif abs(coords.dst.row - coords.src.row) <= 1 and abs(coords.dst.col - coords.src.col) <= 1:
+            """Valid move distance"""
+            if coords.dst == coords.src:
+                """self destruct"""
+                return True
+            if not self.all_other_conditions(coords):
                 return False
-
-        # Configuration of allowed movements of the defender:
-        if (
-                unit.type == UnitType.AI or unit.type == UnitType.Firewall or unit.type == UnitType.Program) and unit.player == Player.Defender:
-            if not self.check_defender_moves(coords):
-                return False
-        # TODO fix invalid moves slipping through these checks!!! (empty locations , ennemy units , and also 0 healing are passing)
-        if dst_unit is not None:
-            if unit.player == dst_unit.player:
-                """ repair conditions --unit.repair_table != 0 && health < 9 """
-                if coords.src == coords.dst:
-                    return True
-                healing_amount = unit.repair_amount(dst_unit)
-                if healing_amount == 0:
-                    return False
+        else:
+            print("non specific Invalid move")
+            return False
         return True
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
@@ -470,21 +471,11 @@ class Game:
 
             # If the destination is not empty and the destination cell = source cell: auto-destruct.
             elif destination is not None and coords.src == coords.dst:
-
-                # Create the adjacent coordinates, get its element and remove 2 points:
-                for i in range(-1, 2):
-                    for j in range(-1, 2):
-                        coord = Coord(coords.src.row + i, coords.src.col + j)
-                        # 'get' checks the value of the element in 'coord' and if the coordinates are inside the board.
-                        unit = self.get(coord)
-                        if unit and (not (i == 0 and j == 0)):
-                            unit.mod_health(-2)
-                            # If it is dead, remove it.
-                            self.remove_dead(coord)
-
-                # Get the source/destination unit's health, take it all and remove it.
-                total_health = source.health
-                source.mod_health(-total_health)
+                # Iterate over the adjacent coordinates, get its element and remove 2 points then kill the source:
+                for blast in coords.src.iter_range(1):
+                    if self.get(blast) is not None:
+                        self.get(blast).mod_health(-2)
+                source.mod_health(-9)
                 self.remove_dead(coords.src)
 
             # If destination is not empty and the destination unit is yours: heal.
@@ -494,9 +485,6 @@ class Game:
 
                 # Necessary condition to check if you cannot heal (two options: either the unit is fully healed or you cannot heal it).
                 if healing_amount == 0:
-                    if is_current_player_comp:
-                        print("   !!!!   THIS CODE BLOCK SHOULD NEVER BE ACCESSIBLE   !!!!   ")
-                        self.kill_current_player_AI()
                     return False, "Invalid move: you cannot repair a fully healed unit or you don't have healing power"
                 else:
                     destination.mod_health(healing_amount)
@@ -636,93 +624,76 @@ class Game:
             for dst in src.iter_adjacent():
                 move.dst = dst
                 if self.is_valid_move(move):
+                    print(move.to_string())
                     yield move.clone()
             move.dst = src
-            yield move.clone()
+            if self.is_valid_coord(move.dst):
+                yield move.clone()
 
-    def random_move(self) -> Tuple[int, CoordPair | None, float]:
+    def random_move(self) -> Tuple[float, CoordPair | None]:
         """Returns a random move."""
         move_candidates = list(self.move_candidates())
         random.shuffle(move_candidates)
         if len(move_candidates) > 0:
-            return 0, move_candidates[0], 1
+            return 0, move_candidates[0]
         else:
-            return 0, None, 0
+            return 0, None
 
-    def e0(self):
+    def e0(self) -> float:
         count = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
         for i in range(self.options.dim):
             for j in range(self.options.dim):
                 if self.board[i][j] is not None:
                     count[self.board[i][j].player.value ^ self.next_player.value][self.board[i][j].type.value] += 1
 
-        return (
+        return float((
                 3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]
         ) - (
                 3 * count[1][1] + 3 * count[1][2] + 3 * count[1][3] + 3 * count[1][4] + 9999 * count[1][0]
-        )
+        ))
 
-    def e1(self):
-        count = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-        for i in range(self.options.dim):
-            for j in range(self.options.dim):
-                if self.board[i][j] is not None:
-                    count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
-
-        return (
-                3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]
-        ) - (
-                3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0]
-        )
-
-    def e2(self):
-        count = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-        for i in range(self.options.dim):
-            for j in range(self.options.dim):
-                if self.board[i][j] is not None:
-                    count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
-
-        return (
-                3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]
-        ) - (
-                3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 3 * count[0][0] + 9999 * count[1][0]
-        )
-
-    def minimax(self, depth=1, maximizing=True, node_count=0, total_depth=0):
+    def minimax(self, depth=0, maximizing=True, node_count=0) -> Tuple[float, CoordPair | None]:
         node_count += 1  # Increment the node count
-        total_depth += depth  # Add the current depth to the total
         if self.has_winner() is not None or depth >= self.options.max_depth:
-            avg_depth = total_depth / node_count
+            print(f" node count at this leaf : {node_count}")
             score = self.e0()
-            return score, None, avg_depth
-        """ TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!! """
+            return score, None
+        # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
         best_move = None
         if maximizing:
             max_eval = float('-inf')
             for move in self.move_candidates():
+                fileprint.suppress_output = False
+                # print(move.to_string())
                 new_game = self.clone()
                 new_game.perform_move(move)
-                eval, _, avg_depth = new_game.minimax(depth + 1, False, node_count, total_depth)
+                eval, _ = new_game.minimax(depth + 1, False, node_count)
                 if eval > max_eval:
                     max_eval = eval
-                    print(f"new bestmove maximum found {move.to_string()} with score {eval}")
+                    fileprint.suppress_output = False
+                    print(f"new bestmove MAXIMUM found {move.to_string()} with score {eval}")
                     best_move = move  # Update best_move
-            return max_eval, best_move, avg_depth
+                fileprint.suppress_output = True
+            return max_eval, best_move
         else:
             min_eval = float('inf')
             for move in self.move_candidates():
+                fileprint.suppress_output = False
+                # print(move.to_string())
                 new_game = self.clone()
                 new_game.perform_move(move)
-                eval, _, avg_depth = new_game.minimax(depth + 1, True, node_count, total_depth)
+                eval, _ = new_game.minimax(depth + 1, True, node_count)
                 if eval < min_eval:
                     min_eval = eval
-                    print(f"new bestmove minimum found {move.to_string()} with score {eval}")
+                    fileprint.suppress_output = False
+                    print(f"new bestmove MINIMUM found {move.to_string()} with score {eval}")
                     best_move = move  # Update best_move
-            return min_eval, best_move, avg_depth
+                fileprint.suppress_output = True
+            return min_eval, best_move
 
     def minimax_with_alpha_beta(self, depth, alpha, beta, maximizing):
         if self.has_winner() is not None:
-            return self.e1()
+            return self.e0()
         """ TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!! """
 
         if maximizing:
@@ -752,17 +723,14 @@ class Game:
         """Suggest the next move using minimax alpha beta. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
         start_time = datetime.now()
         fileprint.suppress_output = True
-        (score, move, avg_depth) = self.minimax()
+        (score, move) = self.minimax()
         fileprint.suppress_output = False
-        print(move.to_string())
         # reverting invalid move killing from minimax because only board is deepcopied in the game not the other member variables
         self._defender_has_ai = True
         self._attacker_has_ai = True
         elapsed_seconds = (datetime.now() - start_time).total_seconds()
         self.stats.total_seconds += elapsed_seconds
         print(f"Heuristic score: {score}")
-        print(f"Average recursive depth: {avg_depth:0.1f}")
-        print(f"Evals per depth: ", end='')
         for k in sorted(self.stats.evaluations_per_depth.keys()):
             print(f"{k}:{self.stats.evaluations_per_depth[k]} ", end='')
         print()
