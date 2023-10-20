@@ -23,8 +23,7 @@ def add_edges(graph, data, parent=None, depth=0, index=0):
             add_edges(graph, child, node_id, depth+1, i)
 
 # Create a directed graph
-dot = Digraph(comment='The Tree')
-
+dot = Digraph(comment='The Tree', format='png', engine='dot', graph_attr={'rankdir':'LR'})
 # Call the function to add edges
 add_edges(dot, data)
 
