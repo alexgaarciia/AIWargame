@@ -640,6 +640,7 @@ class Game:
 
     def e0(self) -> float:
         count = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+        # unit count, health sum get counted in the table in relation to their enum value
         for i in range(self.options.dim):
             for j in range(self.options.dim):
                 if self.board[i][j] is not None:
@@ -654,10 +655,53 @@ class Game:
         # fileprint.suppress_output = True
         return heuristic
 
+    def e1(self) -> float:
+        w1, w2, w3, w4, w5 = 10000, 1, 10, 2, 2  # Example weights
+        count = [[(0, 0), (0, 0), (0, 0), (0, 0), 0], [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
+        # unit count, health sum get counted in the table in relation to their enum value
+        for i in range(self.options.dim):
+            for j in range(self.options.dim):
+                if self.board[i][j] is not None:
+                    # using tuple zip unpacking to do element wise addition
+                    count[self.board[i][j].player.value][self.board[i][j].type.value] += tuple(
+                        a + b for a, b in zip(
+                            count[self.board[i][j].player.value][self.board[i][j].type.value], (1, self.board[i][j].health)
+                        ))
+        current_player_modifier = -1 if self.next_player.value == 1 else 1
+        ai_health = (count[0][0][1] - count[1][0][1]) * current_player_modifier
+        total_health = (sum(unit[1] for unit in count[0]) - sum(unit[1] for unit in count[0])) * current_player_modifier
+        total_units = (sum(unit[0] for unit in count[0]) - sum(unit[0] for unit in count[1])) * current_player_modifier
+
+        # Initialize damage potential for both players
+        player0_damage_potential = 0
+        player1_damage_potential = 0
+
+        # Loop through to calculate damage potential
+        for unit_type in range(len(count[0])):
+            avg_damage = sum(Unit.damage_table[unit_type]) / len(Unit.damage_table[unit_type])
+            player0_damage_potential += count[0][unit_type][0] * avg_damage
+            player1_damage_potential += count[1][unit_type][0] * avg_damage
+        damage_potential = (player0_damage_potential - player1_damage_potential) * current_player_modifier
+
+        # Initialize damage potential for both players
+        player0_repair_potential = 0
+        player1_repair_potential = 0
+
+        # Loop through to calculate damage potential
+        for unit_type in range(len(count[0])):
+            avg_repair = sum(Unit.repair_table[unit_type]) / len(Unit.repair_table[unit_type])
+            player0_repair_potential += count[0][unit_type][0] * avg_repair
+            player1_repair_potential += count[1][unit_type][0] * avg_repair
+        repair_potential = (player0_repair_potential - player1_repair_potential) * current_player_modifier
+
+        heuristic = (w1 * ai_health) + (w2 * total_health) + (w3 * total_units) + (w4 * damage_potential) + (
+                    w5 * repair_potential)
+        return heuristic
+
     def minimax(self, depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
         indent = "  " * depth
         if self.has_winner() is not None or depth >= self.options.max_depth:
-            score = self.e0()
+            score = self.e1()
             fileprint.suppress_output = False
             print(f'{indent}{{"score": {score}, "move": "None"}},')  # Leaf node
             fileprint.suppress_output = True
@@ -819,7 +863,7 @@ def main():
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--max_turns', type=float, help='maximum number of turns before game ends')
-    parser.add_argument('--game_type', type=str, default="auto", help='game type: auto|attacker|defender|manual')
+    parser.add_argument('--game_type', type=str, default="attacker", help='game type: auto|attacker|defender|manual')
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
 
