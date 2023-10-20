@@ -656,14 +656,14 @@ class Game:
         return heuristic
 
     def e1(self) -> float:
-        w1, w2, w3, w4, w5 = 10000, 1, 10, 2, 2  # Example weights
-        count = [[(0, 0), (0, 0), (0, 0), (0, 0), 0], [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
+        w1, w2, w3, w4, w5 = 10000, 1, 10, 2, 2  # Adjustable Weights
+        count = [[(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
         # unit count, health sum get counted in the table in relation to their enum value
         for i in range(self.options.dim):
             for j in range(self.options.dim):
                 if self.board[i][j] is not None:
                     # using tuple zip unpacking to do element wise addition
-                    count[self.board[i][j].player.value][self.board[i][j].type.value] += tuple(
+                    count[self.board[i][j].player.value][self.board[i][j].type.value] = tuple(
                         a + b for a, b in zip(
                             count[self.board[i][j].player.value][self.board[i][j].type.value], (1, self.board[i][j].health)
                         ))
@@ -863,7 +863,7 @@ def main():
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--max_turns', type=float, help='maximum number of turns before game ends')
-    parser.add_argument('--game_type', type=str, default="attacker", help='game type: auto|attacker|defender|manual')
+    parser.add_argument('--game_type', type=str, default="auto", help='game type: auto|attacker|defender|manual')
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
 
