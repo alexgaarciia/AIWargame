@@ -707,13 +707,14 @@ class Game:
         return 0
 
     def minimax(self, depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
+
         indent = "  " * depth
         if self.has_winner() is not None or depth >= self.options.max_depth:
-            score = self.e1()
+
             # fileprint.suppress_output = False
             # print(f'{indent}{{"score": {score}, "move": "None"}},')  # Leaf node
             # fileprint.suppress_output = True
-            return score, None
+            return None, None
         # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
         best_move = None
         all_moves = self.move_candidates()
@@ -726,7 +727,10 @@ class Game:
             for move in all_moves:
                 new_game = self.clone()
                 new_game.perform_move(move.clone())
+                new_game.next_turn()
                 neweval, _ = new_game.minimax(depth + 1, not maximizing)
+                if neweval is None:
+                    neweval = self.e0()
                 if neweval > max_eval:
                     max_eval = neweval
                     # fileprint.suppress_output = False
@@ -748,7 +752,10 @@ class Game:
             for move in all_moves:
                 new_game = self.clone()
                 new_game.perform_move(move.clone())
+                new_game.next_turn()
                 neweval, _ = new_game.minimax(depth + 1, not maximizing)
+                if neweval is None:
+                    neweval = self.e0()
                 if neweval < min_eval:
                     min_eval = neweval
                     # fileprint.suppress_output = False
@@ -765,7 +772,7 @@ class Game:
 
     def minimax_with_alpha_beta(self, alpha: float, beta: float, depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
         if self.has_winner() is not None or depth >= self.options.max_depth:
-            return self.e1(), None
+            return self.e0(), None
         """ TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!! """
         best_move = None
         all_moves = self.move_candidates()
@@ -775,6 +782,7 @@ class Game:
             for move in all_moves:
                 new_game = self.clone()
                 new_game.perform_move(move)
+                new_game.next_turn()
                 neweval, _ = new_game.minimax_with_alpha_beta(depth + 1, alpha, beta, False)
                 # needs an undo move part I think
                 max_eval = max(max_eval, neweval)
@@ -789,6 +797,7 @@ class Game:
             for move in all_moves:
                 new_game = self.clone()
                 new_game.perform_move(move)
+                new_game.next_turn()
                 neweval, _ = new_game.minimax_with_alpha_beta(depth + 1, alpha, beta, True)
                 # needs an undo move part I think
                 min_eval = min(min_eval, neweval)
