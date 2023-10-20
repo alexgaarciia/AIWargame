@@ -883,9 +883,9 @@ def main():
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--max_turns', type=float, help='maximum number of turns before game ends')
+    parser.add_argument('--alpha_beta', type=str, default="True", help='if True alpha-beta is on; otherwise minimax is on')
     parser.add_argument('--game_type', type=str, default="auto", help='game type: auto|attacker|defender|manual')
     parser.add_argument('--broker', type=str, help='play via a game broker')
-    parser.add_argument('--alpha', type=str, help='play via alpha_beta algorithm or minimax')
     args = parser.parse_args()
 
     # parse the game type
@@ -898,7 +898,6 @@ def main():
     else:
         game_type = GameType.CompVsComp
 
-
     # set up game options
     options = Options(game_type=game_type)
 
@@ -908,15 +907,15 @@ def main():
     if args.max_time is not None:
         options.max_time = args.max_time
     if args.max_turns is not None:
-        Options.max_turns = args.max_turns
+        options.max_turns = args.max_turns
     if args.broker is not None:
         options.broker = args.broker
-    if args.alpha == "true":
+    if args.alpha_beta == "True":
         options.alpha_beta = True
-    if args.alpha == "false":
+    if args.alpha_beta == "False":
         options.alpha_beta = False
-    # Create file that stores the output:
 
+    # Create file that stores the output:
     global fileprint
     fileprint = FileOutput(f'gameTrace-{options.alpha_beta}-{options.max_time}-{options.max_turns}.txt')
 
