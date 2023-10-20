@@ -885,6 +885,7 @@ def main():
     parser.add_argument('--max_turns', type=float, help='maximum number of turns before game ends')
     parser.add_argument('--game_type', type=str, default="auto", help='game type: auto|attacker|defender|manual')
     parser.add_argument('--broker', type=str, help='play via a game broker')
+    parser.add_argument('--alpha', type=str, help='play via alpha_beta algorithm or minimax')
     args = parser.parse_args()
 
     # parse the game type
@@ -896,6 +897,7 @@ def main():
         game_type = GameType.AttackerVsDefender
     else:
         game_type = GameType.CompVsComp
+
 
     # set up game options
     options = Options(game_type=game_type)
@@ -909,7 +911,10 @@ def main():
         Options.max_turns = args.max_turns
     if args.broker is not None:
         options.broker = args.broker
-
+    if args.alpha == "true":
+        options.alpha_beta = True
+    if args.alpha == "false":
+        options.alpha_beta = False
     # Create file that stores the output:
 
     global fileprint
