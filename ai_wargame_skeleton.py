@@ -674,15 +674,15 @@ class Game:
             for move in all_moves:
                 new_game = self.clone()
                 new_game.perform_move(move.clone())
-                eval, _ = new_game.minimax(depth + 1, not maximizing)
-                if eval > max_eval:
-                    max_eval = eval
+                neweval, _ = new_game.minimax(depth + 1, not maximizing)
+                if neweval > max_eval:
+                    max_eval = neweval
                     # fileprint.suppress_output = False
-                    # print(f"new bestmove MAXIMUM found {move.to_string()} with score {eval}")
+                    # print(f"new bestmove MAXIMUM found {move.to_string()} with score {neweval}")
                     # fileprint.suppress_output = True
                     best_move = move.clone()  # Update best_move
                 fileprint.suppress_output = False
-                print(f'{indent}  {{"score": {eval}, "move": "{move.to_string()}"}},')  # Child node
+                print(f'{indent}  {{"score": {neweval}, "move": "{move.to_string()}"}},')  # Child node
                 fileprint.suppress_output = True
             fileprint.suppress_output = False
             print(f'{indent}]}},')  # Closing Max node
@@ -695,15 +695,15 @@ class Game:
             for move in all_moves:
                 new_game = self.clone()
                 new_game.perform_move(move.clone())
-                eval, _ = new_game.minimax(depth + 1, not maximizing)
-                if eval < min_eval:
-                    min_eval = eval
+                neweval, _ = new_game.minimax(depth + 1, not maximizing)
+                if neweval < min_eval:
+                    min_eval = neweval
                     # fileprint.suppress_output = False
-                    # print(f"new bestmove MINIMUM found {move.to_string()} with score {eval}")
+                    # print(f"new bestmove MINIMUM found {move.to_string()} with score {neweval}")
                     # fileprint.suppress_output = True
                     best_move = move.clone()  # Update best_move
                 fileprint.suppress_output = False
-                print(f'{indent}  {{"score": {eval}, "move": "{move.to_string()}"}},')  # Child node
+                print(f'{indent}  {{"score": {neweval}, "move": "{move.to_string()}"}},')  # Child node
                 fileprint.suppress_output = True
             fileprint.suppress_output = False
             print(f'{indent}]}},')  # Closing Max node
