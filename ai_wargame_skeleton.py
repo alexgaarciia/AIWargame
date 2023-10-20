@@ -380,7 +380,8 @@ class Game:
                         if self.check_attacker_moves(coords):
                             for adjacent in coords.src.iter_adjacent():
                                 if self.get(adjacent) is not None and self.get(adjacent).player != src_unit.player:
-                                    print(f"Unit locked in Combat, cannot move! {src_unit.to_string()} at {coords.src.to_string()}\n")
+                                    print(
+                                        f"Unit locked in Combat, cannot move! {src_unit.to_string()} at {coords.src.to_string()}\n")
                                     return False
                         else:
                             return False
@@ -401,7 +402,8 @@ class Game:
             if dst_unit.health < 9 and src_unit.repair_amount(dst_unit) != 0:
                 return True
             else:
-                print(f"Invalid Healing target! from {src_unit.to_string()} to {dst_unit.to_string()} at {coords.dst.to_string()}\n")
+                print(
+                    f"Invalid Healing target! from {src_unit.to_string()} to {dst_unit.to_string()} at {coords.dst.to_string()}\n")
         return False
 
     def is_valid_move(self, coords: CoordPair) -> bool:
@@ -646,10 +648,12 @@ class Game:
                 if self.board[i][j] is not None:
                     count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
         heuristic = float(((
-                3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 * count[0][0]
-        ) - (
-                3 * count[1][1] + 3 * count[1][2] + 3 * count[1][3] + 3 * count[1][4] + 9999 * count[1][0]
-        )) * (-1 if self.next_player.value == 1 else 1))
+                                   3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 *
+                                   count[0][0]
+                           ) - (
+                                   3 * count[1][1] + 3 * count[1][2] + 3 * count[1][3] + 3 * count[1][4] + 9999 *
+                                   count[1][0]
+                           )) * (-1 if self.next_player.value == 1 else 1))
         # fileprint.suppress_output = False
         # print(f"e is {heuristic} for player {self.next_player}")
         # fileprint.suppress_output = True
@@ -665,7 +669,8 @@ class Game:
                     # using tuple zip unpacking to do element wise addition
                     count[self.board[i][j].player.value][self.board[i][j].type.value] = tuple(
                         a + b for a, b in zip(
-                            count[self.board[i][j].player.value][self.board[i][j].type.value], (1, self.board[i][j].health)
+                            count[self.board[i][j].player.value][self.board[i][j].type.value],
+                            (1, self.board[i][j].health)
                         ))
         current_player_modifier = -1 if self.next_player.value == 1 else 1
         ai_health = (count[0][0][1] - count[1][0][1]) * current_player_modifier
@@ -695,7 +700,7 @@ class Game:
         repair_potential = (player0_repair_potential - player1_repair_potential) * current_player_modifier
 
         heuristic = (w1 * ai_health) + (w2 * total_health) + (w3 * total_units) + (w4 * damage_potential) + (
-                    w5 * repair_potential)
+                w5 * repair_potential)
         return heuristic
 
     def minimax(self, depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
@@ -709,9 +714,9 @@ class Game:
         # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
         best_move = None
         all_moves = self.move_candidates()
-        min_eval = float('inf')
-        max_eval = float('-inf')
+
         if maximizing:
+            max_eval = float('-inf')
             fileprint.suppress_output = False
             print(f'{indent}{{"type": "Max", "depth": {depth}, "children": [')  # Opening Max node
             fileprint.suppress_output = True
@@ -733,6 +738,7 @@ class Game:
             fileprint.suppress_output = True
             return max_eval, best_move
         else:
+            min_eval = float('inf')
             fileprint.suppress_output = False
             print(f'{indent}{{"type": "Min", "depth": {depth}, "children": [')  # Opening Min node
             fileprint.suppress_output = True
@@ -754,39 +760,47 @@ class Game:
             fileprint.suppress_output = True
             return min_eval, best_move
 
-    def minimax_with_alpha_beta(self, depth, alpha, beta, maximizing):
-        if self.has_winner() is not None:
-            return self.e0()
+    def minimax_with_alpha_beta(self, alpha: float, beta: float, depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
+        if self.has_winner() is not None or depth >= self.options.max_depth:
+            return self.e1(), None
         """ TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!! """
+        best_move = None
+        all_moves = self.move_candidates()
 
         if maximizing:
             max_eval = float('-inf')
-            for move in self.move_candidates():
-                self.perform_move(move)
-                eval = self.minimax_with_alpha_beta(depth + 1, alpha, beta, False)
+            for move in all_moves:
+                new_game = self.clone()
+                new_game.perform_move(move)
+                neweval, _ = new_game.minimax_with_alpha_beta(depth + 1, alpha, beta, False)
                 # needs an undo move part I think
-                max_eval = max(max_eval, eval)
-                alpha = max(alpha, eval)
+                max_eval = max(max_eval, neweval)
+                if max_eval == neweval:
+                    best_move = move.clone()
+                alpha = max(alpha, neweval)
                 if beta <= alpha:
                     break
-            return max_eval
+            return max_eval, best_move
         else:
             min_eval = float('inf')
-            for move in self.move_candidates():
-                self.perform_move(move)
-                eval = self.minimax_with_alpha_beta(depth + 1, alpha, beta, True)
+            for move in all_moves:
+                new_game = self.clone()
+                new_game.perform_move(move)
+                neweval, _ = new_game.minimax_with_alpha_beta(depth + 1, alpha, beta, True)
                 # needs an undo move part I think
-                min_eval = min(min_eval, eval)
-                beta = min(beta, eval)
+                min_eval = min(min_eval, neweval)
+                if min_eval == neweval:
+                    best_move = move.clone()
+                beta = min(beta, neweval)
                 if beta <= alpha:
                     break
-            return min_eval
+            return min_eval, best_move
 
     def suggest_move(self) -> CoordPair | None:
         """Suggest the next move using minimax alpha beta. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
         start_time = datetime.now()
         fileprint.suppress_output = True
-        (score, move) = self.minimax()
+        (score, move) = self.minimax_with_alpha_beta(float('-inf'), float('inf'))
         fileprint.suppress_output = False
         # reverting invalid move killing from minimax because only board is deepcopied in the game not the other member variables
         self._defender_has_ai = True
