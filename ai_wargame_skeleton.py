@@ -251,13 +251,13 @@ class CoordPair:
 class Options:
     """Representation of the game options."""
     dim: int = 5
-    max_depth: int | None = 4
+    max_depth: int | None = 20
     min_depth: int | None = 2
     max_time: float | None = 5.0
     game_type: GameType = GameType.CompVsComp
     alpha_beta: bool = True
-    max_turns: int | None = 100
-    randomize_moves: bool = True
+    max_turns: int | None = 300
+    randomize_moves: bool = False
     broker: str | None = None
 
 
@@ -800,7 +800,10 @@ class Game:
         """Suggest the next move using minimax alpha beta. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
         start_time = datetime.now()
         fileprint.suppress_output = True
-        (score, move) = self.minimax_with_alpha_beta(float('-inf'), float('inf'))
+        if self.options.alpha_beta:
+            (score, move) = self.minimax_with_alpha_beta(float('-inf'), float('inf'))
+        else:
+            (score, move) = self.minimax()
         fileprint.suppress_output = False
         # reverting invalid move killing from minimax because only board is deepcopied in the game not the other member variables
         self._defender_has_ai = True
