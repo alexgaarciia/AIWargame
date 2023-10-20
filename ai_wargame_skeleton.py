@@ -251,12 +251,12 @@ class CoordPair:
 class Options:
     """Representation of the game options."""
     dim: int = 5
-    max_depth: int | None = 20
+    max_depth: int | None = 4
     min_depth: int | None = 2
     max_time: float | None = 5.0
     game_type: GameType = GameType.CompVsComp
     alpha_beta: bool = True
-    max_turns: int | None = 300
+    max_turns: int | None = 100
     randomize_moves: bool = False
     broker: str | None = None
 
@@ -703,13 +703,16 @@ class Game:
                 w5 * repair_potential)
         return heuristic
 
+    def e2(self):
+        return 0
+
     def minimax(self, depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
         indent = "  " * depth
         if self.has_winner() is not None or depth >= self.options.max_depth:
             score = self.e1()
-            fileprint.suppress_output = False
-            print(f'{indent}{{"score": {score}, "move": "None"}},')  # Leaf node
-            fileprint.suppress_output = True
+            # fileprint.suppress_output = False
+            # print(f'{indent}{{"score": {score}, "move": "None"}},')  # Leaf node
+            # fileprint.suppress_output = True
             return score, None
         # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
         best_move = None
@@ -717,9 +720,9 @@ class Game:
 
         if maximizing:
             max_eval = float('-inf')
-            fileprint.suppress_output = False
-            print(f'{indent}{{"type": "Max", "depth": {depth}, "children": [')  # Opening Max node
-            fileprint.suppress_output = True
+            # fileprint.suppress_output = False
+            # print(f'{indent}{{"type": "Max", "depth": {depth}, "children": [')  # Opening Max node
+            # fileprint.suppress_output = True
             for move in all_moves:
                 new_game = self.clone()
                 new_game.perform_move(move.clone())
@@ -730,18 +733,18 @@ class Game:
                     # print(f"new bestmove MAXIMUM found {move.to_string()} with score {neweval}")
                     # fileprint.suppress_output = True
                     best_move = move.clone()  # Update best_move
-                fileprint.suppress_output = False
-                print(f'{indent}  {{"score": {neweval}, "move": "{move.to_string()}"}},')  # Child node
-                fileprint.suppress_output = True
-            fileprint.suppress_output = False
-            print(f'{indent}]}},')  # Closing Max node
-            fileprint.suppress_output = True
+                # fileprint.suppress_output = False
+                # print(f'{indent}  {{"score": {neweval}, "move": "{move.to_string()}"}},')  # Child node
+                # fileprint.suppress_output = True
+            # fileprint.suppress_output = False
+            # print(f'{indent}]}},')  # Closing Max node
+            # fileprint.suppress_output = True
             return max_eval, best_move
         else:
             min_eval = float('inf')
-            fileprint.suppress_output = False
-            print(f'{indent}{{"type": "Min", "depth": {depth}, "children": [')  # Opening Min node
-            fileprint.suppress_output = True
+            # fileprint.suppress_output = False
+            # print(f'{indent}{{"type": "Min", "depth": {depth}, "children": [')  # Opening Min node
+            # fileprint.suppress_output = True
             for move in all_moves:
                 new_game = self.clone()
                 new_game.perform_move(move.clone())
@@ -752,12 +755,12 @@ class Game:
                     # print(f"new bestmove MINIMUM found {move.to_string()} with score {neweval}")
                     # fileprint.suppress_output = True
                     best_move = move.clone()  # Update best_move
-                fileprint.suppress_output = False
-                print(f'{indent}  {{"score": {neweval}, "move": "{move.to_string()}"}},')  # Child node
-                fileprint.suppress_output = True
-            fileprint.suppress_output = False
-            print(f'{indent}]}},')  # Closing Max node
-            fileprint.suppress_output = True
+                # fileprint.suppress_output = False
+                # print(f'{indent}  {{"score": {neweval}, "move": "{move.to_string()}"}},')  # Child node
+                # fileprint.suppress_output = True
+            # fileprint.suppress_output = False
+            # print(f'{indent}]}},')  # Closing Max node
+            # fileprint.suppress_output = True
             return min_eval, best_move
 
     def minimax_with_alpha_beta(self, alpha: float, beta: float, depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
