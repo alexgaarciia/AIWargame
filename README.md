@@ -13,7 +13,11 @@
   
 ## Languages and software
 - Language used; Python
+- using PiPy interpreter
+- Requires the "Request" package
 - Done in Pycharm, but works for any other Python IDE
+
+- grapher.py requires external Graphvis libraries https://graphviz.org/
   
 # Project D1 - Human vs Human mode
 - Detection of ilegal actions (diagonals, destinations out of the board, moving the opponent's units, escaping when engaged in combat, possible directions depending on the unit type, ...)
@@ -22,3 +26,5 @@
 - Self-destruct: Any unit can kill itself and penalize the health of its adjacents (including diagonals) in 2 points.
 - Health constraints: If health gets to 0, the unit is deleted from board. Health cannot be above 9.
 - Input parameters: Number of maximum turns.
+
+# Project D2 - Human vs COMP & COMP vs COMP modes
