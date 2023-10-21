@@ -709,7 +709,7 @@ class Game:
         return 0
 
     def minimax(self, start_time, depth=0, maximizing=True) -> Tuple[float | None, CoordPair | None]:
-        if datetime.now() - start_time >= self.options.max_time:
+        if (datetime.now() - start_time).total_seconds() >= self.options.max_time:
             return None, None
         heuristic_to_use = self.chosen_heuristic()
         if self.has_winner() is not None or depth >= self.options.max_depth:
@@ -745,7 +745,7 @@ class Game:
             return best_move
 
     def minimax_with_alpha_beta(self, start_time, alpha=float('-inf'), beta=float('inf'), depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
-        if datetime.now() - start_time >= self.options.max_time:
+        if (datetime.now() - start_time).total_seconds() >= self.options.max_time:
             return None, None
         heuristic_to_use = self.chosen_heuristic()
         if self.has_winner() is not None or depth >= self.options.max_depth:
@@ -879,11 +879,11 @@ def main():
     parser = argparse.ArgumentParser(
         prog='ai_wargame',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--heuristic', type=int, help='heuristic mode')
-    parser.add_argument('--max_depth', type=int, help='maximum search depth')
-    parser.add_argument('--max_time', type=float, help='maximum search time')
-    parser.add_argument('--max_turns', type=float, help='maximum number of turns before game ends')
-    parser.add_argument('--alpha_beta', type=str, default="True", help='if True alpha-beta is on; otherwise minimax is on')
+    parser.add_argument('--heuristic', type=int, default=0, help='heuristic mode')
+    parser.add_argument('--max_depth', type=int, default=8, help='maximum search depth')
+    parser.add_argument('--max_time', type=float, default=5.0, help='maximum search time')
+    parser.add_argument('--max_turns', type=int, help='maximum number of turns before game ends')
+    parser.add_argument('--alpha_beta', type=str, default="False", help='if True alpha-beta is on; otherwise minimax is on')
     parser.add_argument('--game_type', type=str, default="auto", help='game type: auto|attacker|defender|manual')
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
