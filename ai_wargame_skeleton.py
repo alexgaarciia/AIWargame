@@ -708,7 +708,9 @@ class Game:
     def e2(self):
         return 0
 
-    def minimax(self, depth=0, maximizing=True) -> Tuple[float | None, CoordPair | None]:
+    def minimax(self, start_time, depth=0, maximizing=True) -> Tuple[float | None, CoordPair | None]:
+        if datetime.now() - start_time >= self.options.max_time:
+            return None, None
         heuristic_to_use = self.chosen_heuristic()
         if self.has_winner() is not None or depth >= self.options.max_depth:
             return heuristic_to_use, None
@@ -723,7 +725,9 @@ class Game:
                 new_game = self.clone()
                 new_game.perform_move(move.clone())
                 new_game.next_turn()
-                neweval, _ = new_game.minimax(depth + 1, not maximizing)
+                neweval, _ = new_game.minimax(start_time, depth + 1, not maximizing)
+                if neweval is None:
+                    break
                 children.append((-neweval, move))  # I think it had to be inverted here because this is the score from the perspective of the other player that just returned
             best_move = max(children, key=lambda x: x[0])
             return best_move
@@ -733,12 +737,16 @@ class Game:
                 new_game = self.clone()
                 new_game.perform_move(move.clone())
                 new_game.next_turn()
-                neweval, _ = new_game.minimax(depth + 1, not maximizing)
+                neweval, _ = new_game.minimax(start_time, depth + 1, not maximizing)
+                if neweval is None:
+                    break
                 children.append((-neweval, move))
             best_move = min(children, key=lambda x: x[0])
             return best_move
 
-    def minimax_with_alpha_beta(self, alpha=float('-inf'), beta=float('inf'), depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
+    def minimax_with_alpha_beta(self, start_time, alpha=float('-inf'), beta=float('inf'), depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
+        if datetime.now() - start_time >= self.options.max_time:
+            return None, None
         heuristic_to_use = self.chosen_heuristic()
         if self.has_winner() is not None or depth >= self.options.max_depth:
             return heuristic_to_use, None
@@ -753,7 +761,9 @@ class Game:
                 new_game = self.clone()
                 new_game.perform_move(move)
                 new_game.next_turn()
-                neweval, _ = new_game.minimax_with_alpha_beta(depth + 1, alpha, beta, False)
+                neweval, _ = new_game.minimax_with_alpha_beta(start_time, depth + 1, alpha, beta, False)
+                if neweval is None:
+                    break
                 neweval = -neweval
                 # needs an undo move part I think
                 max_eval = max(max_eval, neweval)
@@ -769,7 +779,9 @@ class Game:
                 new_game = self.clone()
                 new_game.perform_move(move)
                 new_game.next_turn()
-                neweval, _ = new_game.minimax_with_alpha_beta(depth + 1, alpha, beta, True)
+                neweval, _ = new_game.minimax_with_alpha_beta(start_time, depth + 1, alpha, beta, True)
+                if neweval is None:
+                    break
                 neweval = -neweval
                 # needs an undo move part I think
                 min_eval = min(min_eval, neweval)
@@ -785,9 +797,9 @@ class Game:
         start_time = datetime.now()
         fileprint.suppress_output = True
         if self.options.alpha_beta:
-            (score, move) = self.minimax_with_alpha_beta()
+            (score, move) = self.minimax_with_alpha_beta(start_time)
         else:
-            (score, move) = self.minimax()
+            (score, move) = self.minimax(start_time)
         fileprint.suppress_output = False
         # reverting invalid move killing from minimax because only board is deepcopied in the game not the other member variables
         elapsed_seconds = (datetime.now() - start_time).total_seconds()
