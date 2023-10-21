@@ -647,8 +647,9 @@ class Game:
             for j in range(self.options.dim):
                 if self.board[i][j] is not None:
                     count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
-        heuristic = float(((3 * sum(count[0][1:4]) + 9999 * count[0][0]) - (
-                            3 * sum(count[1][1:4]) + 9999 * count[1][0])
+
+        heuristic = float(((3 * sum(count[0][1:5]) + 9999 * count[0][0]) - (
+                            3 * sum(count[1][1:5]) + 9999 * count[1][0])
                            ) * (-1 if self.next_player.value == 1 else 1))
         # fileprint.suppress_output = False
         # print(f"e is {heuristic} for player {self.next_player}")
@@ -670,7 +671,7 @@ class Game:
                         ))
 
         ai_health = (count[0][0][1] - count[1][0][1])
-        total_health = (sum(unit[1] for unit in count[0]) - sum(unit[1] for unit in count[0]))
+        total_health = (sum(unit[1] for unit in count[0]) - sum(unit[1] for unit in count[1]))
         total_units = (sum(unit[0] for unit in count[0]) - sum(unit[0] for unit in count[1]))
 
         # Initialize damage potential for both players
