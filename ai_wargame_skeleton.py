@@ -259,6 +259,7 @@ class Options:
     max_turns: int | None = 100
     randomize_moves: bool = False
     broker: str | None = None
+    heuristic: int | None = 0
 
 
 ##############################################################################################################
@@ -447,7 +448,7 @@ class Game:
             if is_current_player_comp:
                 print(f"AI made invalid move : {coords.to_string()} killing {self.next_player}")
                 self.kill_current_player_AI()
-            return False, "Invalid move"
+            return False, "Player made an invalid move"
 
         # Conditions to perform damage in attack or heal pieces:
         # If destination is not empty and the destination unit is not yours: damage.
@@ -639,6 +640,14 @@ class Game:
         else:
             return 0, None
 
+    def chosen_heuristic(self):
+        heuristic = self.e0()
+        if self.options.heuristic == 1:
+            heuristic = self.e1()
+        elif self.options.heuristic == 2:
+            heuristic = self.e2()
+        return heuristic
+
     def e0(self) -> float:
         count = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
         # unit count, health sum get counted in the table in relation to their enum value
@@ -700,10 +709,10 @@ class Game:
         return 0
 
     def minimax(self, depth=0, maximizing=True) -> Tuple[float | None, CoordPair | None]:
-
+        heuristic_to_use = self.chosen_heuristic()
         indent = "  " * depth
         if self.has_winner() is not None or depth >= self.options.max_depth:
-            return self.e1(), None
+            return heuristic_to_use, None
         # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
         best_move = None
         all_moves = self.move_candidates()
@@ -730,9 +739,10 @@ class Game:
             return best_move
 
     def minimax_with_alpha_beta(self, alpha: float, beta: float, depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
+        heuristic_to_use = self.chosen_heuristic()
         if self.has_winner() is not None or depth >= self.options.max_depth:
-            return self.e0(), None
-        """ TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!! """
+            return heuristic_to_use, None
+        # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
         best_move = None
         all_moves = self.move_candidates()
 
@@ -848,6 +858,7 @@ def main():
     parser = argparse.ArgumentParser(
         prog='ai_wargame',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--heuristic', type=int, help='heuristic mode')
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--max_turns', type=float, help='maximum number of turns before game ends')
@@ -870,6 +881,8 @@ def main():
     options = Options(game_type=game_type)
 
     # override class defaults via command line options
+    if args.heuristic is not None:
+        options.heuristic = args.heuristic
     if args.max_depth is not None:
         options.max_depth = args.max_depth
     if args.max_time is not None:
@@ -893,6 +906,7 @@ def main():
     print(f"\tMaximum number of turns: {options.max_turns}")
     print(f"\tAlpha-beta: {options.alpha_beta}")
     print(f"\tPlayer mode: {options.game_type.name}")
+    print(f"\tChosen heuristic: {options.heuristic}")
     print("\n")
 
     # Create a new game:
@@ -921,7 +935,6 @@ def main():
             else:
                 print("Computer doesn't know what to do!!!")
                 exit(1)
-
     fileprint.close()
 
 
