@@ -1,0 +1,1427 @@
+Game Parameters:
+	Timeout (in seconds): 5.0
+	Maximum number of turns: 100
+	Alpha-beta: False
+	Player mode: CompVsComp
+
+
+
+Next player: Attacker
+Turns played: 0
+
+    0   1   2   3   4  
+A: dA9 dT9 dF9  .   .  
+B: dT9 dP9  .   .   .  
+C: dF9  .   .   .  aP9 
+D:  .   .   .  aF9 aV9 
+E:  .   .  aP9 aV9 aA9 
+
+Heuristic score: -19997.20 for move: C4 B4
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.9s
+Computer Attacker: C4 B4
+
+Next player: Defender
+Turns played: 1
+
+    0   1   2   3   4  
+A: dA9 dT9 dF9  .   .  
+B: dT9 dP9  .   .  aP9 
+C: dF9  .   .   .   .  
+D:  .   .   .  aF9 aV9 
+E:  .   .  aP9 aV9 aA9 
+
+Heuristic score: -5.80 for move: A2 B2
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.2s
+Computer Defender: A2 B2
+
+Next player: Attacker
+Turns played: 2
+
+    0   1   2   3   4  
+A: dA9 dT9  .   .   .  
+B: dT9 dP9 dF9  .  aP9 
+C: dF9  .   .   .   .  
+D:  .   .   .  aF9 aV9 
+E:  .   .  aP9 aV9 aA9 
+
+Heuristic score: -19995.20 for move: D3 C3
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.0s
+Computer Attacker: D3 C3
+
+Next player: Defender
+Turns played: 3
+
+    0   1   2   3   4  
+A: dA9 dT9  .   .   .  
+B: dT9 dP9 dF9  .  aP9 
+C: dF9  .   .  aF9  .  
+D:  .   .   .   .  aV9 
+E:  .   .  aP9 aV9 aA9 
+
+Heuristic score: -7.40 for move: A1 A2
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.4s
+Computer Defender: A1 A2
+
+Next player: Attacker
+Turns played: 4
+
+    0   1   2   3   4  
+A: dA9  .  dT9  .   .  
+B: dT9 dP9 dF9  .  aP9 
+C: dF9  .   .  aF9  .  
+D:  .   .   .   .  aV9 
+E:  .   .  aP9 aV9 aA9 
+
+Heuristic score: 6.80 for move: D4 C4
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.9s
+Computer Attacker: D4 C4
+
+Next player: Defender
+Turns played: 5
+
+    0   1   2   3   4  
+A: dA9  .  dT9  .   .  
+B: dT9 dP9 dF9  .  aP9 
+C: dF9  .   .  aF9 aV9 
+D:  .   .   .   .   .  
+E:  .   .  aP9 aV9 aA9 
+
+Heuristic score: -6.40 for move: C0 D0
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.2s
+Computer Defender: C0 D0
+
+Next player: Attacker
+Turns played: 6
+
+    0   1   2   3   4  
+A: dA9  .  dT9  .   .  
+B: dT9 dP9 dF9  .  aP9 
+C:  .   .   .  aF9 aV9 
+D: dF9  .   .   .   .  
+E:  .   .  aP9 aV9 aA9 
+
+Heuristic score: 6.80 for move: E2 E1
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.3s
+Computer Attacker: E2 E1
+
+Next player: Defender
+Turns played: 7
+
+    0   1   2   3   4  
+A: dA9  .  dT9  .   .  
+B: dT9 dP9 dF9  .  aP9 
+C:  .   .   .  aF9 aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9  .  aV9 aA9 
+
+Heuristic score: -6.80 for move: A2 A3
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.8s
+Computer Defender: A2 A3
+
+Next player: Attacker
+Turns played: 8
+
+    0   1   2   3   4  
+A: dA9  .   .  dT9  .  
+B: dT9 dP9 dF9  .  aP9 
+C:  .   .   .  aF9 aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9  .  aV9 aA9 
+
+Heuristic score: 20004.80 for move: E3 E2
+
+Eval perf.: 0.0k/s
+Elapsed time: 4.0s
+Computer Attacker: E3 E2
+
+Next player: Defender
+Turns played: 9
+
+    0   1   2   3   4  
+A: dA9  .   .  dT9  .  
+B: dT9 dP9 dF9  .  aP9 
+C:  .   .   .  aF9 aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9 aV9  .  aA9 
+
+Heuristic score: -20004.40 for move: B0 C0
+
+Eval perf.: 0.0k/s
+Elapsed time: 4.7s
+Computer Defender: B0 C0
+
+Next player: Attacker
+Turns played: 10
+
+    0   1   2   3   4  
+A: dA9  .   .  dT9  .  
+B:  .  dP9 dF9  .  aP9 
+C: dT9  .   .  aF9 aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9 aV9  .  aA9 
+
+Heuristic score: 20004.40 for move: B4 A4
+
+Eval perf.: 0.0k/s
+Elapsed time: 5.7s
+Computer Attacker: B4 A4
+
+Next player: Defender
+Turns played: 11
+
+    0   1   2   3   4  
+A: dA9  .   .  dT9 aP9 
+B:  .  dP9 dF9  .   .  
+C: dT9  .   .  aF9 aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9 aV9  .  aA9 
+
+Heuristic score: -6.80 for move: B1 C1
+
+Eval perf.: 0.0k/s
+Elapsed time: 5.8s
+Computer Defender: B1 C1
+
+Next player: Attacker
+Turns played: 12
+
+    0   1   2   3   4  
+A: dA9  .   .  dT9 aP9 
+B:  .   .  dF9  .   .  
+C: dT9 dP9  .  aF9 aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9 aV9  .  aA9 
+
+Heuristic score: 4.80 for move: C3 B3
+
+Eval perf.: 0.0k/s
+Elapsed time: 5.7s
+Computer Attacker: C3 B3
+
+Next player: Defender
+Turns played: 13
+
+    0   1   2   3   4  
+A: dA9  .   .  dT9 aP9 
+B:  .   .  dF9 aF9  .  
+C: dT9 dP9  .   .  aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9 aV9  .  aA9 
+
+Heuristic score: -4.80 for move: A3 A4
+
+Eval perf.: 0.0k/s
+Elapsed time: 5.8s
+Computer Defender: A3 A4
+
+Next player: Attacker
+Turns played: 14
+
+    0   1   2   3   4  
+A: dA9  .   .  dT8 aP6 
+B:  .   .  dF9 aF9  .  
+C: dT9 dP9  .   .  aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9 aV9  .  aA9 
+
+Heuristic score: 2.80 for move: B3 A3
+
+Eval perf.: 0.0k/s
+Elapsed time: 5.9s
+Computer Attacker: B3 A3
+
+Next player: Defender
+Turns played: 15
+
+    0   1   2   3   4  
+A: dA9  .   .  dT7 aP6 
+B:  .   .  dF9 aF8  .  
+C: dT9 dP9  .   .  aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9 aV9  .  aA9 
+
+Heuristic score: -2.80 for move: A3 A4
+
+Eval perf.: 0.0k/s
+Elapsed time: 5.8s
+Computer Defender: A3 A4
+
+Next player: Attacker
+Turns played: 16
+
+    0   1   2   3   4  
+A: dA9  .   .  dT6 aP3 
+B:  .   .  dF9 aF8  .  
+C: dT9 dP9  .   .  aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9 aV9  .  aA9 
+
+Heuristic score: -6.20 for move: B3 B2
+
+Eval perf.: 0.0k/s
+Elapsed time: 5.8s
+Computer Attacker: B3 B2
+
+Next player: Defender
+Turns played: 17
+
+    0   1   2   3   4  
+A: dA9  .   .  dT6 aP3 
+B:  .   .  dF8 aF7  .  
+C: dT9 dP9  .   .  aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9 aV9  .  aA9 
+
+Heuristic score: 14.40 for move: A3 A4
+
+Eval perf.: 0.0k/s
+Elapsed time: 5.7s
+Computer Defender: A3 A4
+
+Next player: Attacker
+Turns played: 18
+
+    0   1   2   3   4  
+A: dA9  .   .  dT5  .  
+B:  .   .  dF8 aF7  .  
+C: dT9 dP9  .   .  aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9 aV9  .  aA9 
+
+Heuristic score: -14.40 for move: B3 A3
+
+Eval perf.: 0.0k/s
+Elapsed time: 4.3s
+Computer Attacker: B3 A3
+
+Next player: Defender
+Turns played: 19
+
+    0   1   2   3   4  
+A: dA9  .   .  dT4  .  
+B:  .   .  dF8 aF6  .  
+C: dT9 dP9  .   .  aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9 aV9  .  aA9 
+
+Heuristic score: 16.40 for move: C1 C2
+
+Eval perf.: 0.0k/s
+Elapsed time: 4.3s
+Computer Defender: C1 C2
+
+Next player: Attacker
+Turns played: 20
+
+    0   1   2   3   4  
+A: dA9  .   .  dT4  .  
+B:  .   .  dF8 aF6  .  
+C: dT9  .  dP9  .  aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9 aV9  .  aA9 
+
+Heuristic score: -16.40 for move: B3 A3
+
+Eval perf.: 0.0k/s
+Elapsed time: 4.6s
+Computer Attacker: B3 A3
+
+Next player: Defender
+Turns played: 21
+
+    0   1   2   3   4  
+A: dA9  .   .  dT3  .  
+B:  .   .  dF8 aF5  .  
+C: dT9  .  dP9  .  aV9 
+D: dF9  .   .   .   .  
+E:  .  aP9 aV9  .  aA9 
+
+Heuristic score: 17.40 for move: D0 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 4.8s
+Computer Defender: D0 E0
+
+Next player: Attacker
+Turns played: 22
+
+    0   1   2   3   4  
+A: dA9  .   .  dT3  .  
+B:  .   .  dF8 aF5  .  
+C: dT9  .  dP9  .  aV9 
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: -18.40 for move: B3 A3
+
+Eval perf.: 0.0k/s
+Elapsed time: 4.1s
+Computer Attacker: B3 A3
+
+Next player: Defender
+Turns played: 23
+
+    0   1   2   3   4  
+A: dA9  .   .  dT2  .  
+B:  .   .  dF8 aF4  .  
+C: dT9  .  dP9  .  aV9 
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: 18.40 for move: A3 A2
+
+Eval perf.: 0.0k/s
+Elapsed time: 4.2s
+Computer Defender: A3 A2
+
+Next player: Attacker
+Turns played: 24
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF8 aF4  .  
+C: dT9  .  dP9  .  aV9 
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: -19.40 for move: C4 B4
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.5s
+Computer Attacker: C4 B4
+
+Next player: Defender
+Turns played: 25
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF8 aF4 aV9 
+C: dT9  .  dP9  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: 19.40 for move: A2 B2
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.4s
+Computer Defender: A2 B2
+
+Next player: Attacker
+Turns played: 26
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF9 aF4 aV9 
+C: dT9  .  dP9  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: -19.40 for move: B4 A4
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.9s
+Computer Attacker: B4 A4
+
+Next player: Defender
+Turns played: 27
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .  aV9 
+B:  .   .  dF9 aF4  .  
+C: dT9  .  dP9  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: 19.40 for move: B2 B3
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.0s
+Computer Defender: B2 B3
+
+Next player: Attacker
+Turns played: 28
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .  aV9 
+B:  .   .  dF8 aF3  .  
+C: dT9  .  dP9  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: -24.00 for move: A4 B4
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.1s
+Computer Attacker: A4 B4
+
+Next player: Defender
+Turns played: 29
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF8 aF3 aV9 
+C: dT9  .  dP9  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: 20.40 for move: A2 B2
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.4s
+Computer Defender: A2 B2
+
+Next player: Attacker
+Turns played: 30
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF9 aF3 aV9 
+C: dT9  .  dP9  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: -24.00 for move: B4 A4
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.9s
+Computer Attacker: B4 A4
+
+Next player: Defender
+Turns played: 31
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .  aV9 
+B:  .   .  dF9 aF3  .  
+C: dT9  .  dP9  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: 20.40 for move: B2 B3
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.0s
+Computer Defender: B2 B3
+
+Next player: Attacker
+Turns played: 32
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .  aV9 
+B:  .   .  dF8 aF2  .  
+C: dT9  .  dP9  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: -25.00 for move: A4 B4
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.1s
+Computer Attacker: A4 B4
+
+Next player: Defender
+Turns played: 33
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF8 aF2 aV9 
+C: dT9  .  dP9  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: 21.40 for move: A2 B2
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.4s
+Computer Defender: A2 B2
+
+Next player: Attacker
+Turns played: 34
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF9 aF2 aV9 
+C: dT9  .  dP9  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: -25.00 for move: B3 B2
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.9s
+Computer Attacker: B3 B2
+
+Next player: Defender
+Turns played: 35
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF8 aF1 aV9 
+C: dT9  .  dP9  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: 33.40 for move: B2 B3
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.4s
+Computer Defender: B2 B3
+
+Next player: Attacker
+Turns played: 36
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF7  .  aV9 
+C: dT9  .  dP9  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV9  .  aA9 
+
+Heuristic score: -34.40 for move: E2 D2
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.5s
+Computer Attacker: E2 D2
+
+Next player: Defender
+Turns played: 37
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF7  .  aV9 
+C: dT9  .  dP9  .   .  
+D:  .   .  aV9  .   .  
+E: dF9 aP9  .   .  aA9 
+
+Heuristic score: 34.40 for move: C2 D2
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.3s
+Computer Defender: C2 D2
+
+Next player: Attacker
+Turns played: 38
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF7  .  aV9 
+C: dT9  .  dP6  .   .  
+D:  .   .  aV3  .   .  
+E: dF9 aP9  .   .  aA9 
+
+Heuristic score: -36.40 for move: D2 E2
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.1s
+Computer Attacker: D2 E2
+
+Next player: Defender
+Turns played: 39
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF7  .  aV9 
+C: dT9  .  dP6  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV3  .  aA9 
+
+Heuristic score: 36.40 for move: A2 B2
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.8s
+Computer Defender: A2 B2
+
+Next player: Attacker
+Turns played: 40
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF9  .  aV9 
+C: dT9  .  dP6  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV3  .  aA9 
+
+Heuristic score: -32.40 for move: B4 B3
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.3s
+Computer Attacker: B4 B3
+
+Next player: Defender
+Turns played: 41
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF9 aV9  .  
+C: dT9  .  dP6  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV3  .  aA9 
+
+Heuristic score: 32.40 for move: B2 B3
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.9s
+Computer Defender: B2 B3
+
+Next player: Attacker
+Turns played: 42
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF8 aV8  .  
+C: dT9  .  dP6  .   .  
+D:  .   .   .   .   .  
+E: dF9 aP9 aV3  .  aA9 
+
+Heuristic score: -33.40 for move: E1 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.9s
+Computer Attacker: E1 E0
+
+Next player: Defender
+Turns played: 43
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF8 aV8  .  
+C: dT9  .  dP6  .   .  
+D:  .   .   .   .   .  
+E: dF8 aP8 aV3  .  aA9 
+
+Heuristic score: 33.40 for move: A2 B2
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.2s
+Computer Defender: A2 B2
+
+Next player: Attacker
+Turns played: 44
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF9 aV8  .  
+C: dT9  .  dP6  .   .  
+D:  .   .   .   .   .  
+E: dF8 aP8 aV3  .  aA9 
+
+Heuristic score: -33.40 for move: E1 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.7s
+Computer Attacker: E1 E0
+
+Next player: Defender
+Turns played: 45
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF9 aV8  .  
+C: dT9  .  dP6  .   .  
+D:  .   .   .   .   .  
+E: dF7 aP7 aV3  .  aA9 
+
+Heuristic score: 33.40 for move: B2 B3
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.8s
+Computer Defender: B2 B3
+
+Next player: Attacker
+Turns played: 46
+
+    0   1   2   3   4  
+A: dA9  .  dT2  .   .  
+B:  .   .  dF8 aV7  .  
+C: dT9  .  dP6  .   .  
+D:  .   .   .   .   .  
+E: dF7 aP7 aV3  .  aA9 
+
+Heuristic score: -34.40 for move: B3 A3
+
+Eval perf.: 0.0k/s
+Elapsed time: 3.0s
+Computer Attacker: B3 A3
+
+Next player: Defender
+Turns played: 47
+
+    0   1   2   3   4  
+A: dA9  .  dT2 aV7  .  
+B:  .   .  dF8  .   .  
+C: dT9  .  dP6  .   .  
+D:  .   .   .   .   .  
+E: dF7 aP7 aV3  .  aA9 
+
+Heuristic score: 32.40 for move: A2 B2
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.7s
+Computer Defender: A2 B2
+
+Next player: Attacker
+Turns played: 48
+
+    0   1   2   3   4  
+A: dA9  .  dT2 aV7  .  
+B:  .   .  dF9  .   .  
+C: dT9  .  dP6  .   .  
+D:  .   .   .   .   .  
+E: dF7 aP7 aV3  .  aA9 
+
+Heuristic score: -16.80 for move: A3 A2
+
+Eval perf.: 0.0k/s
+Elapsed time: 2.2s
+Computer Attacker: A3 A2
+
+Next player: Defender
+Turns played: 49
+
+    0   1   2   3   4  
+A: dA9  .   .  aV5  .  
+B:  .   .  dF9  .   .  
+C: dT9  .  dP6  .   .  
+D:  .   .   .   .   .  
+E: dF7 aP7 aV3  .  aA9 
+
+Heuristic score: 16.80 for move: B2 B3
+
+Eval perf.: 0.0k/s
+Elapsed time: 1.5s
+Computer Defender: B2 B3
+
+Next player: Attacker
+Turns played: 50
+
+    0   1   2   3   4  
+A: dA9  .   .  aV5  .  
+B:  .   .   .  dF9  .  
+C: dT9  .  dP6  .   .  
+D:  .   .   .   .   .  
+E: dF7 aP7 aV3  .  aA9 
+
+Heuristic score: -16.80 for move: A3 A2
+
+Eval perf.: 0.0k/s
+Elapsed time: 1.5s
+Computer Attacker: A3 A2
+
+Next player: Defender
+Turns played: 51
+
+    0   1   2   3   4  
+A: dA9  .  aV5  .   .  
+B:  .   .   .  dF9  .  
+C: dT9  .  dP6  .   .  
+D:  .   .   .   .   .  
+E: dF7 aP7 aV3  .  aA9 
+
+Heuristic score: 16.80 for move: B3 C3
+
+Eval perf.: 0.0k/s
+Elapsed time: 1.7s
+Computer Defender: B3 C3
+
+Next player: Attacker
+Turns played: 52
+
+    0   1   2   3   4  
+A: dA9  .  aV5  .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP6 dF9  .  
+D:  .   .   .   .   .  
+E: dF7 aP7 aV3  .  aA9 
+
+Heuristic score: 9980.60 for move: A2 A1
+
+Eval perf.: 0.0k/s
+Elapsed time: 1.4s
+Computer Attacker: A2 A1
+
+Next player: Defender
+Turns played: 53
+
+    0   1   2   3   4  
+A: dA9 aV5  .   .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP6 dF9  .  
+D:  .   .   .   .   .  
+E: dF7 aP7 aV3  .  aA9 
+
+Heuristic score: -19985.20 for move: C0 D0
+
+Eval perf.: 0.0k/s
+Elapsed time: 1.3s
+Computer Defender: C0 D0
+
+Next player: Attacker
+Turns played: 54
+
+    0   1   2   3   4  
+A: dA9 aV5  .   .   .  
+B:  .   .   .   .   .  
+C:  .   .  dP6 dF9  .  
+D: dT9  .   .   .   .  
+E: dF7 aP7 aV3  .  aA9 
+
+Heuristic score: 29956.40 for move: A1 A0
+
+Eval perf.: 0.0k/s
+Elapsed time: 1.3s
+Computer Attacker: A1 A0
+
+Next player: Defender
+Turns played: 55
+
+    0   1   2   3   4  
+A: dA6  .   .   .   .  
+B:  .   .   .   .   .  
+C:  .   .  dP6 dF9  .  
+D: dT9  .   .   .   .  
+E: dF7 aP7 aV3  .  aA9 
+
+Heuristic score: -29960.00 for move: D0 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.7s
+Computer Defender: D0 E0
+
+Next player: Attacker
+Turns played: 56
+
+    0   1   2   3   4  
+A: dA6  .   .   .   .  
+B:  .   .   .   .   .  
+C:  .   .  dP6 dF9  .  
+D: dT9  .   .   .   .  
+E: dF9 aP7 aV3  .  aA9 
+
+Heuristic score: 29955.40 for move: E1 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.5s
+Computer Attacker: E1 E0
+
+Next player: Defender
+Turns played: 57
+
+    0   1   2   3   4  
+A: dA6  .   .   .   .  
+B:  .   .   .   .   .  
+C:  .   .  dP6 dF9  .  
+D: dT9  .   .   .   .  
+E: dF8 aP6 aV3  .  aA9 
+
+Heuristic score: -29959.00 for move: D0 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.7s
+Computer Defender: D0 E0
+
+Next player: Attacker
+Turns played: 58
+
+    0   1   2   3   4  
+A: dA6  .   .   .   .  
+B:  .   .   .   .   .  
+C:  .   .  dP6 dF9  .  
+D: dT9  .   .   .   .  
+E: dF9 aP6 aV3  .  aA9 
+
+Heuristic score: 29954.40 for move: E1 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.5s
+Computer Attacker: E1 E0
+
+Next player: Defender
+Turns played: 59
+
+    0   1   2   3   4  
+A: dA6  .   .   .   .  
+B:  .   .   .   .   .  
+C:  .   .  dP6 dF9  .  
+D: dT9  .   .   .   .  
+E: dF8 aP5 aV3  .  aA9 
+
+Heuristic score: -29958.00 for move: D0 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.7s
+Computer Defender: D0 E0
+
+Next player: Attacker
+Turns played: 60
+
+    0   1   2   3   4  
+A: dA6  .   .   .   .  
+B:  .   .   .   .   .  
+C:  .   .  dP6 dF9  .  
+D: dT9  .   .   .   .  
+E: dF9 aP5 aV3  .  aA9 
+
+Heuristic score: 29953.40 for move: E1 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.5s
+Computer Attacker: E1 E0
+
+Next player: Defender
+Turns played: 61
+
+    0   1   2   3   4  
+A: dA6  .   .   .   .  
+B:  .   .   .   .   .  
+C:  .   .  dP6 dF9  .  
+D: dT9  .   .   .   .  
+E: dF8 aP4 aV3  .  aA9 
+
+Heuristic score: -29957.00 for move: D0 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.7s
+Computer Defender: D0 E0
+
+Next player: Attacker
+Turns played: 62
+
+    0   1   2   3   4  
+A: dA6  .   .   .   .  
+B:  .   .   .   .   .  
+C:  .   .  dP6 dF9  .  
+D: dT9  .   .   .   .  
+E: dF9 aP4 aV3  .  aA9 
+
+Heuristic score: 29940.20 for move: E2 D2
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.5s
+Computer Attacker: E2 D2
+
+Next player: Defender
+Turns played: 63
+
+    0   1   2   3   4  
+A: dA6  .   .   .   .  
+B:  .   .   .   .   .  
+C:  .   .  dP6 dF9  .  
+D: dT9  .  aV3  .   .  
+E: dF9 aP4  .   .  aA9 
+
+Heuristic score: -29946.80 for move: C2 D2
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.8s
+Computer Defender: C2 D2
+
+Next player: Attacker
+Turns played: 64
+
+    0   1   2   3   4  
+A: dA6  .   .   .   .  
+B:  .   .   .   .   .  
+C:  .   .  dP3 dF9  .  
+D: dT9  .   .   .   .  
+E: dF9 aP4  .   .  aA9 
+
+Heuristic score: 29941.20 for move: E1 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.1s
+Computer Attacker: E1 E0
+
+Next player: Defender
+Turns played: 65
+
+    0   1   2   3   4  
+A: dA6  .   .   .   .  
+B:  .   .   .   .   .  
+C:  .   .  dP3 dF9  .  
+D: dT9  .   .   .   .  
+E: dF8 aP3  .   .  aA9 
+
+Heuristic score: -29945.80 for move: D0 C0
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.2s
+Computer Defender: D0 C0
+
+Next player: Attacker
+Turns played: 66
+
+    0   1   2   3   4  
+A: dA6  .   .   .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3 dF9  .  
+D:  .   .   .   .   .  
+E: dF8 aP3  .   .  aA9 
+
+Heuristic score: 29943.20 for move: E1 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.2s
+Computer Attacker: E1 E0
+
+Next player: Defender
+Turns played: 67
+
+    0   1   2   3   4  
+A: dA6  .   .   .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3 dF9  .  
+D:  .   .   .   .   .  
+E: dF7 aP2  .   .  aA9 
+
+Heuristic score: -29946.80 for move: A0 A1
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.2s
+Computer Defender: A0 A1
+
+Next player: Attacker
+Turns played: 68
+
+    0   1   2   3   4  
+A:  .  dA6  .   .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3 dF9  .  
+D:  .   .   .   .   .  
+E: dF7 aP2  .   .  aA9 
+
+Heuristic score: 29943.20 for move: E1 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.2s
+Computer Attacker: E1 E0
+
+Next player: Defender
+Turns played: 69
+
+    0   1   2   3   4  
+A:  .  dA6  .   .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3 dF9  .  
+D:  .   .   .   .   .  
+E: dF6 aP1  .   .  aA9 
+
+Heuristic score: -29946.80 for move: A1 A2
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.2s
+Computer Defender: A1 A2
+
+Next player: Attacker
+Turns played: 70
+
+    0   1   2   3   4  
+A:  .   .  dA6  .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3 dF9  .  
+D:  .   .   .   .   .  
+E: dF6 aP1  .   .  aA9 
+
+Heuristic score: 29944.20 for move: E1 E1
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.1s
+Computer Attacker: E1 E1
+
+Next player: Defender
+Turns played: 71
+
+    0   1   2   3   4  
+A:  .   .  dA6  .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3 dF9  .  
+D:  .   .   .   .   .  
+E: dF4  .   .   .  aA9 
+
+Heuristic score: -19947.80 for move: C3 D3
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.1s
+Computer Defender: C3 D3
+
+Next player: Attacker
+Turns played: 72
+
+    0   1   2   3   4  
+A:  .   .  dA6  .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3  .   .  
+D:  .   .   .  dF9  .  
+E: dF4  .   .   .  aA9 
+
+Heuristic score: -32.20 for move: E4 D4
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Attacker: E4 D4
+
+Next player: Defender
+Turns played: 73
+
+    0   1   2   3   4  
+A:  .   .  dA6  .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3  .   .  
+D:  .   .   .  dF9 aA9 
+E: dF4  .   .   .   .  
+
+Heuristic score: 52.20 for move: D3 D4
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Defender: D3 D4
+
+Next player: Attacker
+Turns played: 74
+
+    0   1   2   3   4  
+A:  .   .  dA6  .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3  .   .  
+D:  .   .   .  dF8 aA8 
+E: dF4  .   .   .   .  
+
+Heuristic score: -20034.20 for move: D4 D3
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Attacker: D4 D3
+
+Next player: Defender
+Turns played: 75
+
+    0   1   2   3   4  
+A:  .   .  dA6  .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3  .   .  
+D:  .   .   .  dF7 aA7 
+E: dF4  .   .   .   .  
+
+Heuristic score: 20052.20 for move: D3 D4
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.1s
+Computer Defender: D3 D4
+
+Next player: Attacker
+Turns played: 76
+
+    0   1   2   3   4  
+A:  .   .  dA6  .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3  .   .  
+D:  .   .   .  dF6 aA6 
+E: dF4  .   .   .   .  
+
+Heuristic score: -40036.20 for move: D4 D3
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Attacker: D4 D3
+
+Next player: Defender
+Turns played: 77
+
+    0   1   2   3   4  
+A:  .   .  dA6  .   .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3  .   .  
+D:  .   .   .  dF5 aA5 
+E: dF4  .   .   .   .  
+
+Heuristic score: 30052.20 for move: A2 A3
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Defender: A2 A3
+
+Next player: Attacker
+Turns played: 78
+
+    0   1   2   3   4  
+A:  .   .   .  dA6  .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3  .   .  
+D:  .   .   .  dF5 aA5 
+E: dF4  .   .   .   .  
+
+Heuristic score: -39943.20 for move: D4 D3
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Attacker: D4 D3
+
+Next player: Defender
+Turns played: 79
+
+    0   1   2   3   4  
+A:  .   .   .  dA6  .  
+B:  .   .   .   .   .  
+C: dT9  .  dP3  .   .  
+D:  .   .   .  dF4 aA4 
+E: dF4  .   .   .   .  
+
+Heuristic score: 29969.80 for move: C0 C0
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Defender: C0 C0
+
+Next player: Attacker
+Turns played: 80
+
+    0   1   2   3   4  
+A:  .   .   .  dA6  .  
+B:  .   .   .   .   .  
+C:  .   .  dP3  .   .  
+D:  .   .   .  dF4 aA4 
+E: dF4  .   .   .   .  
+
+Heuristic score: -29969.80 for move: D4 D3
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Attacker: D4 D3
+
+Next player: Defender
+Turns played: 81
+
+    0   1   2   3   4  
+A:  .   .   .  dA6  .  
+B:  .   .   .   .   .  
+C:  .   .  dP3  .   .  
+D:  .   .   .  dF3 aA3 
+E: dF4  .   .   .   .  
+
+Heuristic score: 20002.00 for move: C2 C2
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Defender: C2 C2
+
+Next player: Attacker
+Turns played: 82
+
+    0   1   2   3   4  
+A:  .   .   .  dA6  .  
+B:  .   .   .   .   .  
+C:  .   .   .   .   .  
+D:  .   .   .  dF1 aA3 
+E: dF4  .   .   .   .  
+
+Heuristic score: -20002.00 for move: D4 D3
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Attacker: D4 D3
+
+Next player: Defender
+Turns played: 83
+
+    0   1   2   3   4  
+A:  .   .   .  dA6  .  
+B:  .   .   .   .   .  
+C:  .   .   .   .   .  
+D:  .   .   .   .  aA2 
+E: dF4  .   .   .   .  
+
+Heuristic score: 20018.00 for move: E0 E0
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Defender: E0 E0
+
+Next player: Attacker
+Turns played: 84
+
+    0   1   2   3   4  
+A:  .   .   .  dA6  .  
+B:  .   .   .   .   .  
+C:  .   .   .   .   .  
+D:  .   .   .   .  aA2 
+E:  .   .   .   .   .  
+
+Heuristic score: -20018.00 for move: D4 C4
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Attacker: D4 C4
+
+Next player: Defender
+Turns played: 85
+
+    0   1   2   3   4  
+A:  .   .   .  dA6  .  
+B:  .   .   .   .   .  
+C:  .   .   .   .  aA2 
+D:  .   .   .   .   .  
+E:  .   .   .   .   .  
+
+Heuristic score: 20018.00 for move: A3 A4
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Defender: A3 A4
+
+Next player: Attacker
+Turns played: 86
+
+    0   1   2   3   4  
+A:  .   .   .   .  dA6 
+B:  .   .   .   .   .  
+C:  .   .   .   .  aA2 
+D:  .   .   .   .   .  
+E:  .   .   .   .   .  
+
+Heuristic score: 40020.00 for move: C4 B4
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Attacker: C4 B4
+
+Next player: Defender
+Turns played: 87
+
+    0   1   2   3   4  
+A:  .   .   .   .  dA6 
+B:  .   .   .   .  aA2 
+C:  .   .   .   .   .  
+D:  .   .   .   .   .  
+E:  .   .   .   .   .  
+
+Heuristic score: 40020.00 for move: A4 B4
+
+Eval perf.: 0.0k/s
+Elapsed time: 0.0s
+Computer Defender: A4 B4
+
+Next player: Attacker
+Turns played: 88
+
+    0   1   2   3   4  
+A:  .   .   .   .  dA4 
+B:  .   .   .   .   .  
+C:  .   .   .   .   .  
+D:  .   .   .   .   .  
+E:  .   .   .   .   .  
+
+Defender wins!
