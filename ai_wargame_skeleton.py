@@ -6,7 +6,7 @@ from datetime import datetime
 from enum import Enum
 from dataclasses import dataclass, field
 from time import sleep
-from typing import Tuple, TypeVar, Type, Iterable, ClassVar
+from typing import Tuple, TypeVar, Type, Iterable, ClassVar, List
 import random
 import requests
 import sys
@@ -647,13 +647,9 @@ class Game:
             for j in range(self.options.dim):
                 if self.board[i][j] is not None:
                     count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
-        heuristic = float(((
-                                   3 * count[0][1] + 3 * count[0][2] + 3 * count[0][3] + 3 * count[0][4] + 9999 *
-                                   count[0][0]
-                           ) - (
-                                   3 * count[1][1] + 3 * count[1][2] + 3 * count[1][3] + 3 * count[1][4] + 9999 *
-                                   count[1][0]
-                           )) * (-1 if self.next_player.value == 1 else 1))
+        heuristic = float(((3 * sum(count[0][1:4]) + 9999 * count[0][0]) - (
+                            3 * sum(count[1][1:4]) + 9999 * count[1][0])
+                           ) * (-1 if self.next_player.value == 1 else 1))
         # fileprint.suppress_output = False
         # print(f"e is {heuristic} for player {self.next_player}")
         # fileprint.suppress_output = True
@@ -672,10 +668,10 @@ class Game:
                             count[self.board[i][j].player.value][self.board[i][j].type.value],
                             (1, self.board[i][j].health)
                         ))
-        current_player_modifier = -1 if self.next_player.value == 1 else 1
-        ai_health = (count[0][0][1] - count[1][0][1]) * current_player_modifier
-        total_health = (sum(unit[1] for unit in count[0]) - sum(unit[1] for unit in count[0])) * current_player_modifier
-        total_units = (sum(unit[0] for unit in count[0]) - sum(unit[0] for unit in count[1])) * current_player_modifier
+
+        ai_health = (count[0][0][1] - count[1][0][1])
+        total_health = (sum(unit[1] for unit in count[0]) - sum(unit[1] for unit in count[0]))
+        total_units = (sum(unit[0] for unit in count[0]) - sum(unit[0] for unit in count[1]))
 
         # Initialize damage potential for both players
         player0_damage_potential = 0
@@ -686,7 +682,7 @@ class Game:
             avg_damage = sum(Unit.damage_table[unit_type]) / len(Unit.damage_table[unit_type])
             player0_damage_potential += count[0][unit_type][0] * avg_damage
             player1_damage_potential += count[1][unit_type][0] * avg_damage
-        damage_potential = (player0_damage_potential - player1_damage_potential) * current_player_modifier
+        damage_potential = (player0_damage_potential - player1_damage_potential)
 
         # Initialize damage potential for both players
         player0_repair_potential = 0
@@ -697,10 +693,10 @@ class Game:
             avg_repair = sum(Unit.repair_table[unit_type]) / len(Unit.repair_table[unit_type])
             player0_repair_potential += count[0][unit_type][0] * avg_repair
             player1_repair_potential += count[1][unit_type][0] * avg_repair
-        repair_potential = (player0_repair_potential - player1_repair_potential) * current_player_modifier
+        repair_potential = (player0_repair_potential - player1_repair_potential)
 
-        heuristic = (w1 * ai_health) + (w2 * total_health) + (w3 * total_units) + (w4 * damage_potential) + (
-                w5 * repair_potential)
+        heuristic = float(((w1 * ai_health) + (w2 * total_health) + (w3 * total_units) + (w4 * damage_potential) + (
+                w5 * repair_potential)) * (-1 if self.next_player.value == 1 else 1))
         return heuristic
 
     def e2(self):
@@ -714,13 +710,13 @@ class Game:
             # fileprint.suppress_output = False
             # print(f'{indent}{{"score": {score}, "move": "None"}},')  # Leaf node
             # fileprint.suppress_output = True
-            return None, None
+            return self.e0(), None
         # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
         best_move = None
         all_moves = self.move_candidates()
-
+        children: List[tuple[float, CoordPair | None]] = []
         if maximizing:
-            max_eval = float('-inf')
+            children.append((float('-inf'), best_move))
             # fileprint.suppress_output = False
             # print(f'{indent}{{"type": "Max", "depth": {depth}, "children": [')  # Opening Max node
             # fileprint.suppress_output = True
@@ -731,7 +727,8 @@ class Game:
                 neweval, _ = new_game.minimax(depth + 1, not maximizing)
                 if neweval is None:
                     neweval = self.e0()
-                if neweval > max_eval:
+                children.append((neweval, move))
+            """ if neweval > max_eval:
                     max_eval = neweval
                     # fileprint.suppress_output = False
                     # print(f"new bestmove MAXIMUM found {move.to_string()} with score {neweval}")
@@ -742,10 +739,11 @@ class Game:
                 # fileprint.suppress_output = True
             # fileprint.suppress_output = False
             # print(f'{indent}]}},')  # Closing Max node
-            # fileprint.suppress_output = True
-            return max_eval, best_move
+            # fileprint.suppress_output = True """
+            best_move = max(children, key=lambda x: x[0])
+            return best_move
         else:
-            min_eval = float('inf')
+            children.append((float('inf'), best_move))
             # fileprint.suppress_output = False
             # print(f'{indent}{{"type": "Min", "depth": {depth}, "children": [')  # Opening Min node
             # fileprint.suppress_output = True
@@ -756,7 +754,9 @@ class Game:
                 neweval, _ = new_game.minimax(depth + 1, not maximizing)
                 if neweval is None:
                     neweval = self.e0()
-                if neweval < min_eval:
+                # neweval = neweval * -1
+                children.append((neweval, move))
+            """ if neweval < min_eval:
                     min_eval = neweval
                     # fileprint.suppress_output = False
                     # print(f"new bestmove MINIMUM found {move.to_string()} with score {neweval}")
@@ -767,8 +767,9 @@ class Game:
                 # fileprint.suppress_output = True
             # fileprint.suppress_output = False
             # print(f'{indent}]}},')  # Closing Max node
-            # fileprint.suppress_output = True
-            return min_eval, best_move
+            # fileprint.suppress_output = True"""
+            best_move = min(children, key=lambda x: x[0])
+            return best_move
 
     def minimax_with_alpha_beta(self, alpha: float, beta: float, depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
         if self.has_winner() is not None or depth >= self.options.max_depth:
@@ -892,7 +893,7 @@ def main():
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--max_turns', type=float, help='maximum number of turns before game ends')
-    parser.add_argument('--alpha_beta', type=str, default="True", help='if True alpha-beta is on; otherwise minimax is on')
+    parser.add_argument('--alpha_beta', type=str, default="False", help='if True alpha-beta is on; otherwise minimax is on')
     parser.add_argument('--game_type', type=str, default="auto", help='game type: auto|attacker|defender|manual')
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
