@@ -880,7 +880,7 @@ def main():
         prog='ai_wargame',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--heuristic', type=int, default=0, help='heuristic mode')
-    parser.add_argument('--max_depth', type=int, default=8, help='maximum search depth')
+    parser.add_argument('--max_depth', type=int, default=4, help='maximum search depth')
     parser.add_argument('--max_time', type=float, default=5.0, help='maximum search time')
     parser.add_argument('--max_turns', type=int, help='maximum number of turns before game ends')
     parser.add_argument('--alpha_beta', type=str, default="False", help='if True alpha-beta is on; otherwise minimax is on')
