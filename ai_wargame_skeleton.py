@@ -796,6 +796,7 @@ class Game:
         """Suggest the next move using minimax alpha beta. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
         start_time = datetime.now()
         fileprint.suppress_output = True
+        fileprint.suppress_output = True
         if self.options.alpha_beta:
             (score, move) = self.minimax_with_alpha_beta(start_time)
         else:
@@ -922,11 +923,12 @@ def main():
 
     # Append the game parameters:
     print("Game Parameters:")
-    print(f"\tTimeout (in seconds): {options.max_time}")
     print(f"\tMaximum number of turns: {options.max_turns}")
-    print(f"\tAlpha-beta: {options.alpha_beta}")
     print(f"\tPlayer mode: {options.game_type.name}")
-    print(f"\tChosen heuristic: {options.heuristic}")
+    if args.game_type != "manual":
+        print(f"\tTimeout (in seconds): {options.max_time}")
+        print(f"\tAlpha-beta: {options.alpha_beta}")
+        print(f"\tChosen heuristic: {options.heuristic}")
     print("\n")
 
     # Create a new game:
