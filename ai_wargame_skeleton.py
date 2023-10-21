@@ -710,7 +710,7 @@ class Game:
             # fileprint.suppress_output = False
             # print(f'{indent}{{"score": {score}, "move": "None"}},')  # Leaf node
             # fileprint.suppress_output = True
-            return self.e0(), None
+            return None, None
         # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
         best_move = None
         all_moves = self.move_candidates()
@@ -754,7 +754,6 @@ class Game:
                 neweval, _ = new_game.minimax(depth + 1, not maximizing)
                 if neweval is None:
                     neweval = self.e0()
-                # neweval = neweval * -1
                 children.append((neweval, move))
             """ if neweval < min_eval:
                     min_eval = neweval
