@@ -791,8 +791,6 @@ class Game:
             (score, move) = self.minimax()
         fileprint.suppress_output = False
         # reverting invalid move killing from minimax because only board is deepcopied in the game not the other member variables
-        self._defender_has_ai = True
-        self._attacker_has_ai = True
         elapsed_seconds = (datetime.now() - start_time).total_seconds()
         self.stats.total_seconds += elapsed_seconds
         print(f"Heuristic score: {score:.2f} for move: {move}")
@@ -804,6 +802,8 @@ class Game:
         for k in sorted(self.stats.evaluations_per_depth.keys()):
             print(f"% of cumulative evaluations per depth: {k}:{self.stats.evaluations_per_depth[k]/total_evals*100} ", end='')
         print()
+
+        print("Branching factor: ", total_evals/len(self.stats.evaluations_per_depth))
 
         if self.stats.total_seconds > 0:
             print(f"Eval perf.: {total_evals / self.stats.total_seconds / 1000:0.1f}k/s")
