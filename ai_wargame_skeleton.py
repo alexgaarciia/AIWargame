@@ -710,9 +710,9 @@ class Game:
 
     def minimax(self, depth=0, maximizing=True) -> Tuple[float | None, CoordPair | None]:
         heuristic_to_use = self.chosen_heuristic()
-        indent = "  " * depth
         if self.has_winner() is not None or depth >= self.options.max_depth:
             return heuristic_to_use, None
+
         # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
         best_move = None
         all_moves = self.move_candidates()
@@ -734,15 +734,16 @@ class Game:
                 new_game.perform_move(move.clone())
                 new_game.next_turn()
                 neweval, _ = new_game.minimax(depth + 1, not maximizing)
-                children.append((neweval, move))
+                children.append((-neweval, move))
             best_move = min(children, key=lambda x: x[0])
             return best_move
 
-    def minimax_with_alpha_beta(self, alpha: float, beta: float, depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
+    def minimax_with_alpha_beta(self, alpha=float('-inf'), beta=float('inf'), depth=0, maximizing=True) -> Tuple[float, CoordPair | None]:
         heuristic_to_use = self.chosen_heuristic()
         if self.has_winner() is not None or depth >= self.options.max_depth:
             return heuristic_to_use, None
         # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
+
         best_move = None
         all_moves = self.move_candidates()
 
@@ -753,6 +754,7 @@ class Game:
                 new_game.perform_move(move)
                 new_game.next_turn()
                 neweval, _ = new_game.minimax_with_alpha_beta(depth + 1, alpha, beta, False)
+                neweval = -neweval
                 # needs an undo move part I think
                 max_eval = max(max_eval, neweval)
                 if max_eval == neweval:
@@ -768,6 +770,7 @@ class Game:
                 new_game.perform_move(move)
                 new_game.next_turn()
                 neweval, _ = new_game.minimax_with_alpha_beta(depth + 1, alpha, beta, True)
+                neweval = -neweval
                 # needs an undo move part I think
                 min_eval = min(min_eval, neweval)
                 if min_eval == neweval:
@@ -782,7 +785,7 @@ class Game:
         start_time = datetime.now()
         fileprint.suppress_output = True
         if self.options.alpha_beta:
-            (score, move) = self.minimax_with_alpha_beta(float('-inf'), float('inf'))
+            (score, move) = self.minimax_with_alpha_beta()
         else:
             (score, move) = self.minimax()
         fileprint.suppress_output = False
@@ -862,7 +865,7 @@ def main():
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--max_turns', type=float, help='maximum number of turns before game ends')
-    parser.add_argument('--alpha_beta', type=str, default="False", help='if True alpha-beta is on; otherwise minimax is on')
+    parser.add_argument('--alpha_beta', type=str, default="True", help='if True alpha-beta is on; otherwise minimax is on')
     parser.add_argument('--game_type', type=str, default="auto", help='game type: auto|attacker|defender|manual')
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
