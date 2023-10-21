@@ -350,7 +350,7 @@ class Game:
                 coords.src == coords.dst):
             return True
         else:
-            print("Warning: You cannot move the Attacker's AI, Firewall and Program down or right\n")
+            print("Warning: You cannot move the Attacker's AI, Firewall and Program down or right")
             return False
 
     def check_defender_moves(self, coords: CoordPair):
@@ -360,7 +360,7 @@ class Game:
                 coords.src == coords.dst):
             return True
         else:
-            print("Warning: You cannot move the Defender's AI, Firewall and Program up or left\n")
+            print("Warning: You cannot move the Defender's AI, Firewall and Program up or left")
             return False
 
     def all_other_conditions(self, coords: CoordPair):
@@ -383,16 +383,17 @@ class Game:
                                     print(
                                         f"Unit locked in Combat, cannot move! {src_unit.to_string()} at {coords.src.to_string()}\n")
                                     return False
+                            return True
                         else:
                             return False
                     elif self.check_defender_moves(coords):
                         for adjacent in coords.src.iter_adjacent():
                             if self.get(adjacent) is not None and self.get(adjacent).player != src_unit.player:
-                                print(f"Unit locked in Combat, cannot move! {src_unit.to_string()}\n")
+                                print(f"Unit locked in Combat, cannot move! {src_unit.to_string()} at {coords.src.to_string()}\n")
                                 return False
-                        else:
-                            return False
-                    return True
+                        return True
+                    else:
+                        return False
 
         if src_unit.player != dst_unit.player:
             """ attack conditions """
@@ -625,11 +626,9 @@ class Game:
             for dst in src.iter_adjacent():
                 move.dst = dst
                 if self.is_valid_move(move):
-                    print(move.to_string())
                     yield move.clone()
             move.dst = src
-            if self.is_valid_coord(move.dst):
-                yield move.clone()
+            yield move.clone()
 
     def random_move(self) -> Tuple[float, CoordPair | None]:
         """Returns a random move."""
@@ -651,9 +650,6 @@ class Game:
         heuristic = float(((3 * sum(count[0][1:5]) + 9999 * count[0][0]) - (
                             3 * sum(count[1][1:5]) + 9999 * count[1][0])
                            ) * (-1 if self.next_player.value == 1 else 1))
-        # fileprint.suppress_output = False
-        # print(f"e is {heuristic} for player {self.next_player}")
-        # fileprint.suppress_output = True
         return heuristic
 
     def e1(self) -> float:
@@ -707,7 +703,7 @@ class Game:
 
         indent = "  " * depth
         if self.has_winner() is not None or depth >= self.options.max_depth:
-            return None, None
+            return self.e1(), None
         # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
         best_move = None
         all_moves = self.move_candidates()
@@ -719,9 +715,7 @@ class Game:
                 new_game.perform_move(move.clone())
                 new_game.next_turn()
                 neweval, _ = new_game.minimax(depth + 1, not maximizing)
-                if neweval is None:
-                    neweval = self.e0()
-                children.append((neweval, move))
+                children.append((-neweval, move))  # I think it had to be inverted here because this is the score from the perspective of the other player that just returned
             best_move = max(children, key=lambda x: x[0])
             return best_move
         else:
@@ -731,8 +725,6 @@ class Game:
                 new_game.perform_move(move.clone())
                 new_game.next_turn()
                 neweval, _ = new_game.minimax(depth + 1, not maximizing)
-                if neweval is None:
-                    neweval = self.e0()
                 children.append((neweval, move))
             best_move = min(children, key=lambda x: x[0])
             return best_move
@@ -789,7 +781,7 @@ class Game:
         self._attacker_has_ai = True
         elapsed_seconds = (datetime.now() - start_time).total_seconds()
         self.stats.total_seconds += elapsed_seconds
-        print(f"Heuristic score: {score}")
+        print(f"Heuristic score: {score:.2f} for move: {move}")
         for k in sorted(self.stats.evaluations_per_depth.keys()):
             print(f"{k}:{self.stats.evaluations_per_depth[k]} ", end='')
         print()
