@@ -464,7 +464,11 @@ class Game:
             print(f"Coordinates out of bound {coords.to_string()}\n")
             return False
 
-        # Check if a unit is moving more than one cell away or in a diagonal direction
+        elif coords.src.row != coords.dst.row and coords.src.col != coords.dst.col:
+            print("You cannot move to the diagonals")
+            return False
+
+        # Check if a unit is moving more than one cell away
         elif not (abs(coords.dst.row - coords.src.row) == 1 and abs(coords.dst.col - coords.src.col) == 1):
             # Self-destruct condition
             if coords.dst == coords.src:
