@@ -382,8 +382,11 @@ class Game:
                 coords.src.row - coords.dst.row) == 1 and (coords.src.col == coords.dst.col)) or (
                 coords.src == coords.dst):
             return True
+        elif (abs(coords.src.col - coords.dst.col) > 1) or (abs(coords.src.row - coords.dst.row) > 1):
+            print("You can only move one step at a time")
+            return False
         else:
-            print("Warning: You cannot move the Attacker's AI, Firewall and Program down or right")
+            print("You cannot move the Attacker's AI, Firewall and Program down or right")
             return False
 
     def check_defender_moves(self, coords: CoordPair):
@@ -392,8 +395,11 @@ class Game:
                 (coords.dst.row - coords.src.row == 1) and (coords.dst.col == coords.src.col)) or (
                 coords.src == coords.dst):
             return True
+        elif (abs(coords.src.col - coords.dst.col) > 1) or (abs(coords.src.row - coords.dst.row) > 1):
+            print("You can only move one step at a time")
+            return False
         else:
-            print("Warning: You cannot move the Defender's AI, Firewall and Program up or left")
+            print("You cannot move the Defender's AI, Firewall and Program up or left")
             return False
 
     def all_other_conditions(self, coords: CoordPair):
@@ -464,6 +470,7 @@ class Game:
             print(f"Coordinates out of bound {coords.to_string()}\n")
             return False
 
+        # Check if a unit is trying to move to the diagonals
         elif coords.src.row != coords.dst.row and coords.src.col != coords.dst.col:
             print("You cannot move to the diagonals")
             return False
