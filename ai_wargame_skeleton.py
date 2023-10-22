@@ -826,12 +826,16 @@ class Game:
         self.stats.total_seconds += elapsed_seconds
         print(f"Heuristic score: {score:.2f} for move: {move}")
         for k in sorted(self.stats.evaluations_per_depth.keys()):
+            if k == 0:
+                continue
             print(f"{k}:{self.stats.evaluations_per_depth[k]} ", end='')
         print()
         total_evals = sum(self.stats.evaluations_per_depth.values())
         print("Cumulative evaluations: ", total_evals)
         print("% of cumulative evaluations per depth: ")
         for k in sorted(self.stats.evaluations_per_depth.keys()):
+            if k == 0:
+                continue
             print(f"depth: {k}:{self.stats.evaluations_per_depth[k]/total_evals*100:0.2f} %\n", end='')
         print()
 
