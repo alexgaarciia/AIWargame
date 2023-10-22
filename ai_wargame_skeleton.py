@@ -717,6 +717,12 @@ class Game:
         return 0
 
     def minimax(self, start_time, depth=0, maximizing=True) -> Tuple[float | None, CoordPair | None]:
+        #adding count to stats
+        if depth in self.stats.evaluations_per_depth:
+            self.stats.evaluations_per_depth[depth] += 1
+        else:
+            self.stats.evaluations_per_depth[depth] = 1
+
         if (datetime.now() - start_time).total_seconds() >= self.options.max_time:
             return None, None
         heuristic_to_use = self.chosen_heuristic()
@@ -726,11 +732,6 @@ class Game:
         # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
         best_move = None
         all_moves = self.move_candidates()
-        #adding count to stats
-        if depth in self.stats.evaluations_per_depth:
-            self.stats.evaluations_per_depth[depth] += 1
-        else:
-            self.stats.evaluations_per_depth[depth] = 1
 
         children: List[tuple[float, CoordPair | None]] = []
         if maximizing:
@@ -759,6 +760,12 @@ class Game:
             return best_move
 
     def minimax_with_alpha_beta(self, start_time, alpha=float('-inf'), beta=float('inf'), depth=0, maximizing=True) -> Tuple[float | None, CoordPair | None]:
+        #adding count to stats
+        if depth in self.stats.evaluations_per_depth:
+            self.stats.evaluations_per_depth[depth] += 1
+        else:
+            self.stats.evaluations_per_depth[depth] = 1
+
         if (datetime.now() - start_time).total_seconds() >= self.options.max_time:
             return None, None
         heuristic_to_use = self.chosen_heuristic()
@@ -767,11 +774,6 @@ class Game:
 
         best_move = None
         all_moves = self.move_candidates()
-        #adding count to stats
-        if depth in self.stats.evaluations_per_depth:
-            self.stats.evaluations_per_depth[depth] += 1
-        else:
-            self.stats.evaluations_per_depth[depth] = 1
 
         if maximizing:
             max_eval = float('-inf')
