@@ -708,7 +708,9 @@ class Game:
         return heuristic
 
     def e0(self) -> float:
+        # Matrix with our counts
         count = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+
         # unit count, health sum get counted in the table in relation to their enum value
         for i in range(self.options.dim):
             for j in range(self.options.dim):
@@ -729,6 +731,7 @@ class Game:
 
         # Matrix with our counts
         count = [[(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
+
         # Unit count, health sum get counted in the table in relation to their enum value
         for i in range(self.options.dim):
             for j in range(self.options.dim):
