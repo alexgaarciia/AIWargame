@@ -250,13 +250,21 @@ class CoordPair:
 @dataclass(slots=True)
 class Options:
     """Representation of the game options."""
+    # dimension of the game
     dim: int = 5
+    # max_depth: maximum depth
     max_depth: int | None = 4
+    # min_depth: minimum depth
     min_depth: int | None = 2
+    # max_time: maximum time for the AI
     max_time: float | None = 5.0
+    # game_type: Human vs. Human, Human vs. Comp, Comp vs. Comp
     game_type: GameType = GameType.CompVsComp
+    # alpha beta mode
     alpha_beta: bool = True
+    # max_turns: maximum number of turns to play
     max_turns: int | None = 100
+
     randomize_moves: bool = False
     broker: str | None = None
     heuristic: int | None = 0
@@ -308,12 +316,19 @@ class Game:
         Shallow copy of everything except the board (options and stats are shared).
         """
         new = copy.copy(self)
+        # copy of the board
         new.board = copy.deepcopy(self.board)
+        # copy of the current player
         new.next_player = copy.deepcopy(self.next_player)
+        # copy of the number of turns played
         new.turns_played = copy.deepcopy(self.turns_played)
+        # copy of configuration
         new.options = copy.deepcopy(self.options)
+        # copy of the attacker's AI status
         new._attacker_has_ai = copy.deepcopy(self._attacker_has_ai)
+        # copy of the defender's AI status
         new._defender_has_ai = copy.deepcopy(self._defender_has_ai)
+        # copy of the statistics of the game
         new.stats = self.stats  # shallow copy for Stats
 
         return new
@@ -373,11 +388,12 @@ class Game:
             return False
 
     def all_other_conditions(self, coords: CoordPair):
+        """ Checks for the conditions to check if the move is valid"""
         src_unit = self.get(coords.src)
         dst_unit = self.get(coords.dst)
 
         if dst_unit is None:
-            """ movement conditions --only out of combat for A F P --only 'outwards' for A F P """
+            """ movement conditions --only out of combat for AI, Firewall and Program --only 'outwards' for A F P """
             match src_unit.type:
                 case UnitType.Virus:
                     return True
@@ -388,18 +404,23 @@ class Game:
                     if src_unit.player == Player.Attacker:
                         if self.check_attacker_moves(coords):
                             for adjacent in coords.src.iter_adjacent():
+                                # If the destination unit does not belong to my player and there is already a unit there -> locked in combat
                                 if self.get(adjacent) is not None and self.get(adjacent).player != src_unit.player:
                                     print(
                                         f"Unit locked in Combat, cannot move! {src_unit.to_string()} at {coords.src.to_string()}\n")
                                     return False
                             return True
+                        # If the attacker cannot do the requested move, return False
                         else:
                             return False
+                    # If the current player is a defender, we call the function to check if the move is valid
                     elif self.check_defender_moves(coords):
                         for adjacent in coords.src.iter_adjacent():
                             if self.get(adjacent) is not None and self.get(adjacent).player != src_unit.player:
                                 print(f"Unit locked in Combat, cannot move! {src_unit.to_string()} at {coords.src.to_string()}\n")
                                 return False
+
+                        # If the defendant unit is not locked in combat, then we return True
                         return True
                     else:
                         return False
@@ -408,7 +429,7 @@ class Game:
             """ attack conditions """
             return True
         if src_unit.player == dst_unit.player:
-            """ repair conditions --unit.repair_table != 0 && health < 9 """
+            """ repair conditions --unit.repair_table != 0 & health < 9 """
             if dst_unit.health < 9 and src_unit.repair_amount(dst_unit) != 0:
                 return True
             else:
@@ -420,22 +441,28 @@ class Game:
         """Validate a move expressed as a CoordPair."""
         # TODO debug fully to make sure this never returns wrong
         unit = self.get(coords.src)
+
+        # Empty unit in the source or the unit in source is from the opponent
         if unit is None or unit.player != self.next_player:
             print("empty source or enemy unit selected\n")
             return False
 
+        # Check if the coordinates are out of the board
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
             print(f"coordinates out of bounds {coords.to_string()}\n")
             return False
+
+        # Check if the player want to move more than one cell
         elif not (abs(coords.dst.row - coords.src.row) == 1 and abs(coords.dst.col - coords.src.col) == 1):
             """Valid move distance"""
+            # Self destruct condition
             if coords.dst == coords.src:
-                """self destruct"""
                 return True
+
             if not self.all_other_conditions(coords):
                 return False
         else:
-            print("non specific Invalid move")
+            print("Invalid move")
             return False
         return True
 
@@ -500,11 +527,10 @@ class Game:
                 else:
                     destination.mod_health(healing_amount)
 
-        # Conditional statement to end the game if an AI makes an invalid movement (still does not work):
-
         return True, str(coords)
 
     def kill_current_player_AI(self):
+        """Kills the AI of the current player and removes it from the board."""
         for (src, unit) in self.player_units(self.next_player):
             if unit.type == UnitType.AI:
                 unit.mod_health(-9)
@@ -649,6 +675,7 @@ class Game:
             return 0, None
 
     def chosen_heuristic(self):
+        """Returns the heuristic chosen in the terminal (and later established as an parameter in Options)"""
         heuristic = self.e0()
         if self.options.heuristic == 1:
             heuristic = self.e1()
@@ -661,20 +688,27 @@ class Game:
         # unit count, health sum get counted in the table in relation to their enum value
         for i in range(self.options.dim):
             for j in range(self.options.dim):
+                # Checks if there is a player in the position
                 if self.board[i][j] is not None:
+                    # Adds to the non-empty coordinates a value in the matrix we created
                     count[self.board[i][j].player.value][self.board[i][j].type.value] += 1
 
+        # composition of the heuristic
         heuristic = float(((3 * sum(count[0][1:5]) + 9999 * count[0][0]) - (
                             3 * sum(count[1][1:5]) + 9999 * count[1][0])
                            ) * (-1 if self.next_player.value == 1 else 1))
         return heuristic
 
     def e1(self) -> float:
-        w1, w2, w3, w4, w5 = 10000, 1, 10, 2, 2  # Adjustable Weights
+        # Adjustable Weights
+        w1, w2, w3, w4, w5 = 10000, 1, 10, 2, 2
+
+        # Matrix with our counts
         count = [[(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
-        # unit count, health sum get counted in the table in relation to their enum value
+        # Unit count, health sum get counted in the table in relation to their enum value
         for i in range(self.options.dim):
             for j in range(self.options.dim):
+                # If the cell is not empty:
                 if self.board[i][j] is not None:
                     # using tuple zip unpacking to do element wise addition
                     count[self.board[i][j].player.value][self.board[i][j].type.value] = tuple(
@@ -702,13 +736,14 @@ class Game:
         player0_repair_potential = 0
         player1_repair_potential = 0
 
-        # Loop through to calculate damage potential
+        # Loop through to calculate repair potential
         for unit_type in range(len(count[0])):
             avg_repair = sum(Unit.repair_table[unit_type]) / len(Unit.repair_table[unit_type])
             player0_repair_potential += count[0][unit_type][0] * avg_repair
             player1_repair_potential += count[1][unit_type][0] * avg_repair
         repair_potential = (player0_repair_potential - player1_repair_potential)
 
+        # Heuristic operation
         heuristic = float(((w1 * ai_health) + (w2 * total_health) + (w3 * total_units) + (w4 * damage_potential) + (
                 w5 * repair_potential)) * (-1 if self.next_player.value == 1 else 1))
         return heuristic
@@ -717,19 +752,36 @@ class Game:
         return 0
 
     def minimax(self, start_time, depth=0, maximizing=True) -> Tuple[float | None, CoordPair | None]:
-        #adding count to stats
+        """
+        Minimax algorithm to traverse the game tree and find the best move.
+
+        Args:
+            start_time (datetime): The time when the minimax search started.
+            depth (int): Current depth of the search tree.
+            maximizing (bool): Indicates whether the current player is maximizing or minimizing.
+
+        Returns:
+            Tuple[float | None, CoordPair | None]: A tuple containing the evaluation score and the best move found so far.
+                If the search exceeds the time limit, returns (None, None).
+        """
+        # Adding count to statistics
         if depth in self.stats.evaluations_per_depth:
             self.stats.evaluations_per_depth[depth] += 1
         else:
             self.stats.evaluations_per_depth[depth] = 1
 
+        # Time statistic
         if (datetime.now() - start_time).total_seconds() >= self.options.max_time:
             return None, None
+
+        # Choose the appropriate heuristic function based on the game's state
         heuristic_to_use = self.chosen_heuristic()
+
+        # Maximum depth statistic
         if self.has_winner() is not None or depth >= self.options.max_depth:
             return heuristic_to_use, None
 
-        # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
+        # Look for the best move
         best_move = None
         all_moves = self.move_candidates()
 
@@ -743,9 +795,11 @@ class Game:
                 neweval, _ = new_game.minimax(start_time, depth + 1, not maximizing)
                 if neweval is None:
                     break
-                children.append((-neweval, move))  # I think it had to be inverted here because this is the score from the perspective of the other player that just returned
+                children.append((-neweval, move))  # TODO: I think it had to be inverted here because this is the score from the perspective of the other player that just returned
             best_move = max(children, key=lambda x: x[0])
             return best_move
+
+        # Algorithm to minimize
         else:
             children.append((float('inf'), best_move))
             for move in all_moves:
@@ -760,15 +814,35 @@ class Game:
             return best_move
 
     def minimax_with_alpha_beta(self, start_time, alpha=float('-inf'), beta=float('inf'), depth=0, maximizing=True) -> Tuple[float | None, CoordPair | None]:
-        #adding count to stats
+        """
+        Minimax algorithm with alpha-beta pruning to optimize the search and reduce unnecessary evaluations of nodes.
+
+        Args:
+            start_time (datetime): The time when the minimax search started.
+            alpha (float, optional): The best value that the maximizing player currently has. Defaults to negative infinity.
+            beta (float, optional): The best value that the minimizing player currently has. Defaults to positive infinity.
+            depth (int, optional): Current depth of the search tree. Defaults to 0.
+            maximizing (bool, optional): Indicates whether the current player is maximizing or minimizing. Defaults to True.
+
+        Returns:
+            Tuple[float | None, CoordPair | None]: A tuple containing the evaluation score and the best move found so far.
+                If the search exceeds the time limit, returns (None, None).
+        """
+
+        # Adding count to statistics
         if depth in self.stats.evaluations_per_depth:
             self.stats.evaluations_per_depth[depth] += 1
         else:
             self.stats.evaluations_per_depth[depth] = 1
 
+        # Time check
         if (datetime.now() - start_time).total_seconds() >= self.options.max_time:
             return None, None
+
+        # Choose the appropriate heuristic function based on the game's state
         heuristic_to_use = self.chosen_heuristic()
+
+        # Maximum depth check and terminal state check
         if self.has_winner() is not None or depth >= self.options.max_depth:
             return heuristic_to_use, None
 
@@ -794,6 +868,8 @@ class Game:
                     break
 
             return max_eval, best_move
+
+        # Minimization algorithm
         else:
             min_eval = float('inf')
             for move in all_moves:
@@ -813,25 +889,48 @@ class Game:
             return min_eval, best_move
 
     def suggest_move(self) -> CoordPair | None:
-        """Suggest the next move using minimax alpha beta. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
+        """
+        Suggest the next move using the minimax algorithm with alpha-beta pruning.
+
+        Returns:
+            CoordPair | None: The suggested move or None if no valid move is found within the time limit.
+        """
+        # Record the start time to limit the search time
         start_time = datetime.now()
+
+        # Suppress file output during the search
         fileprint.suppress_output = True
         fileprint.suppress_output = True
+
+        # Perform minimax search with alpha-beta pruning to find the best move
         if self.options.alpha_beta:
             (score, move) = self.minimax_with_alpha_beta(start_time)
         else:
             (score, move) = self.minimax(start_time)
+
+        # Restore file output
         fileprint.suppress_output = False
-        # reverting invalid move killing from minimax because only board is deepcopied in the game not the other member variables
+
+        # Calculate elapsed time for the search
         elapsed_seconds = (datetime.now() - start_time).total_seconds()
+
+        # Update statistics with the elapsed time
         self.stats.total_seconds += elapsed_seconds
+
+        # Print heuristic score and suggested move
         print(f"Heuristic score: {score:.2f} for move: {move}")
+
+        # Print evaluations per depth
         for k in sorted(self.stats.evaluations_per_depth.keys()):
             if k == 0:
                 continue
             print(f"{k}:{self.stats.evaluations_per_depth[k]} ", end='')
         print()
+
+        # Calculate total number of evaluations
         total_evals = sum(self.stats.evaluations_per_depth.values())
+
+        # Print cumulative evaluations and percentage of evaluations per depth
         print("Cumulative evaluations: ", total_evals)
         print("% of cumulative evaluations per depth: ")
         for k in sorted(self.stats.evaluations_per_depth.keys()):
@@ -840,10 +939,14 @@ class Game:
             print(f"depth: {k}:{self.stats.evaluations_per_depth[k]/total_evals*100:0.2f} %\n", end='')
         print()
 
+        # Calculate branching factor
         print("Branching factor: ", total_evals/len(self.stats.evaluations_per_depth))
 
+        # Print evaluation performance
         if self.stats.total_seconds > 0:
             print(f"Eval perf.: {total_evals / self.stats.total_seconds / 1000:0.1f}k/s")
+
+        # Print elapsed time for the search
         print(f"Elapsed time: {elapsed_seconds:0.1f}s")
         return move
 
@@ -900,7 +1003,10 @@ class Game:
 ##############################################################################################################
 
 def main():
-    # parse command line arguments
+    """
+    Main function to handle command line arguments and run the game loop.
+    """
+
     parser = argparse.ArgumentParser(
         prog='ai_wargame',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -913,7 +1019,7 @@ def main():
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
 
-    # parse the game type
+    # Parse the game type
     if args.game_type == "attacker":
         game_type = GameType.AttackerVsComp
     elif args.game_type == "defender":
@@ -923,10 +1029,10 @@ def main():
     else:
         game_type = GameType.CompVsComp
 
-    # set up game options
+    # Set up game options
     options = Options(game_type=game_type)
 
-    # override class defaults via command line options
+    # Override class defaults via command line options
     if args.heuristic is not None:
         options.heuristic = args.heuristic
     if args.max_depth is not None:
@@ -959,7 +1065,7 @@ def main():
     # Create a new game:
     game = Game(options=options)
 
-    # the main game loop
+    # Main game loop
     while True:
         print()
         print(game)
