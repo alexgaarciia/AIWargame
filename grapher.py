@@ -2,7 +2,7 @@ import json
 from graphviz import Digraph
 
 # Load your JSON data
-with open('gameTrace_deffender_AI.json') as f:
+with open('gameTrace_defender_AI.json') as f:
     data = json.load(f)
 
 def add_edges(graph, data, parent=None, depth=0, index=0):
@@ -24,6 +24,7 @@ def add_edges(graph, data, parent=None, depth=0, index=0):
 
 # Create a directed graph
 dot = Digraph(comment='The Defender Tree', format='pdf', engine='dot', graph_attr={'rankdir':'LR'})
+
 # Call the function to add edges
 add_edges(dot, data)
 
