@@ -252,22 +252,31 @@ class Options:
     """Representation of the game options."""
     # dimension of the game
     dim: int = 5
-    # max_depth: maximum depth
+
+    # maximum depth
     max_depth: int | None = 4
-    # min_depth: minimum depth
+
+    # minimum depth
     min_depth: int | None = 2
-    # max_time: maximum time for the AI
+
+    # maximum time for the AI
     max_time: float | None = 5.0
-    # game_type: Human vs. Human, Human vs. Comp, Comp vs. Comp
+
+    # possible game types: Human vs. Human, Human vs. Comp, Comp vs. Comp
     game_type: GameType = GameType.CompVsComp
+
     # alpha beta mode
     alpha_beta: bool = True
-    # max_turns: maximum number of turns to play
+
+    # maximum number of turns to play
     max_turns: int | None = 100
 
+    # heuristic that will be used in the game
+    heuristic: int | None = 0
+
+    # rest of options:
     randomize_moves: bool = False
     broker: str | None = None
-    heuristic: int | None = 0
 
 
 ##############################################################################################################
@@ -388,77 +397,81 @@ class Game:
             return False
 
     def all_other_conditions(self, coords: CoordPair):
-        """ Checks for the conditions to check if the move is valid"""
+        """Validates various conditions for a unit's move based on the game rules"""
+        # Definition of general variables:
         src_unit = self.get(coords.src)
         dst_unit = self.get(coords.dst)
 
+        # If the destination is empty, handle movement and combat rules.
         if dst_unit is None:
-            """ movement conditions --only out of combat for AI, Firewall and Program --only 'outwards' for A F P """
             match src_unit.type:
                 case UnitType.Virus:
                     return True
                 case UnitType.Tech:
                     return True
                 case _:
-                    """ check outwards, check combat """
+                    # In case specific pieces like AI, Firewall or Program are engaged in combat, they will be
+                    # locked and not allowed to get out of combat.
                     if src_unit.player == Player.Attacker:
                         if self.check_attacker_moves(coords):
                             for adjacent in coords.src.iter_adjacent():
                                 # If the destination unit does not belong to my player and there is already a unit there -> locked in combat
                                 if self.get(adjacent) is not None and self.get(adjacent).player != src_unit.player:
-                                    print(
-                                        f"Unit locked in Combat, cannot move! {src_unit.to_string()} at {coords.src.to_string()}\n")
+                                    print(f"Unit locked in combat, cannot move! {src_unit.to_string()} at {coords.src.to_string()}\n")
                                     return False
                             return True
                         # If the attacker cannot do the requested move, return False
                         else:
                             return False
+
                     # If the current player is a defender, we call the function to check if the move is valid
                     elif self.check_defender_moves(coords):
                         for adjacent in coords.src.iter_adjacent():
+                            # If the destination unit does not belong to my player and there is already a unit there -> locked in combat
                             if self.get(adjacent) is not None and self.get(adjacent).player != src_unit.player:
-                                print(f"Unit locked in Combat, cannot move! {src_unit.to_string()} at {coords.src.to_string()}\n")
+                                print(f"Unit locked in combat, cannot move! {src_unit.to_string()} at {coords.src.to_string()}\n")
                                 return False
-
                         # If the defendant unit is not locked in combat, then we return True
                         return True
                     else:
                         return False
 
+        # Check attack and repair conditions:
         if src_unit.player != dst_unit.player:
-            """ attack conditions """
+            # If the source and destination units are of different players, then it means that it is an attack
             return True
         if src_unit.player == dst_unit.player:
-            """ repair conditions --unit.repair_table != 0 & health < 9 """
+            # If the player from source and destination is the same, it means it is trying to heal a piece
             if dst_unit.health < 9 and src_unit.repair_amount(dst_unit) != 0:
+                # A piece can only be healed if it does not have maximum health or the unit piece cannot repair the
+                # destination piece
                 return True
             else:
-                print(
-                    f"Invalid Healing target! from {src_unit.to_string()} to {dst_unit.to_string()} at {coords.dst.to_string()}\n")
+                print(f"Invalid healing target! from {src_unit.to_string()} to {dst_unit.to_string()} at {coords.dst.to_string()}\n")
         return False
 
     def is_valid_move(self, coords: CoordPair) -> bool:
         """Validate a move expressed as a CoordPair."""
-        # TODO debug fully to make sure this never returns wrong
         unit = self.get(coords.src)
 
         # Empty unit in the source or the unit in source is from the opponent
         if unit is None or unit.player != self.next_player:
-            print("empty source or enemy unit selected\n")
+            print("You cannot move the opponent's unit or there is no unit in the source cell\n")
             return False
 
         # Check if the coordinates are out of the board
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
-            print(f"coordinates out of bounds {coords.to_string()}\n")
+            print(f"Coordinates out of bound {coords.to_string()}\n")
             return False
 
-        # Check if the player want to move more than one cell
+        # Check if a unit is moving more than one cell away or in a diagonal direction
         elif not (abs(coords.dst.row - coords.src.row) == 1 and abs(coords.dst.col - coords.src.col) == 1):
-            """Valid move distance"""
-            # Self destruct condition
+            # Self-destruct condition
             if coords.dst == coords.src:
                 return True
 
+            # If the move isn't a self-destruct (i.e., not moving to the same cell), the move is further validated by
+            # the all_other_conditions(coords) method.
             if not self.all_other_conditions(coords):
                 return False
         else:
@@ -785,7 +798,10 @@ class Game:
         best_move = None
         all_moves = self.move_candidates()
 
+        # Keep track of moves and evaluations
         children: List[tuple[float, CoordPair | None]] = []
+
+        # Maximizing player
         if maximizing:
             children.append((float('-inf'), best_move))
             for move in all_moves:
@@ -795,11 +811,11 @@ class Game:
                 neweval, _ = new_game.minimax(start_time, depth + 1, not maximizing)
                 if neweval is None:
                     break
-                children.append((-neweval, move))  # TODO: I think it had to be inverted here because this is the score from the perspective of the other player that just returned
+                children.append((-neweval, move))
             best_move = max(children, key=lambda x: x[0])
             return best_move
 
-        # Algorithm to minimize
+        # Minimizing player
         else:
             children.append((float('inf'), best_move))
             for move in all_moves:
@@ -828,7 +844,6 @@ class Game:
             Tuple[float | None, CoordPair | None]: A tuple containing the evaluation score and the best move found so far.
                 If the search exceeds the time limit, returns (None, None).
         """
-
         # Adding count to statistics
         if depth in self.stats.evaluations_per_depth:
             self.stats.evaluations_per_depth[depth] += 1
@@ -846,9 +861,11 @@ class Game:
         if self.has_winner() is not None or depth >= self.options.max_depth:
             return heuristic_to_use, None
 
+        # Look for the best move
         best_move = None
         all_moves = self.move_candidates()
 
+        # Maximizing player
         if maximizing:
             max_eval = float('-inf')
             for move in all_moves:
@@ -869,7 +886,7 @@ class Game:
 
             return max_eval, best_move
 
-        # Minimization algorithm
+        # Minimizing player
         else:
             min_eval = float('inf')
             for move in all_moves:
