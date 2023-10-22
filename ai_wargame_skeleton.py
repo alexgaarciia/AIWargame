@@ -726,6 +726,12 @@ class Game:
         # TODO: USE LAMBDA expression of heuristics to  map to e1, 2, or 3 based on options!!!
         best_move = None
         all_moves = self.move_candidates()
+        #adding count to stats
+        if depth in self.stats.evaluations_per_depth:
+            self.stats.evaluations_per_depth[depth] += 1
+        else:
+            self.stats.evaluations_per_depth[depth] = 1
+
         children: List[tuple[float, CoordPair | None]] = []
         if maximizing:
             children.append((float('-inf'), best_move))
@@ -762,6 +768,11 @@ class Game:
 
         best_move = None
         all_moves = self.move_candidates()
+        #adding count to stats
+        if depth in self.stats.evaluations_per_depth:
+            self.stats.evaluations_per_depth[depth] += 1
+        else:
+            self.stats.evaluations_per_depth[depth] = 1
 
         if maximizing:
             max_eval = float('-inf')
@@ -819,8 +830,9 @@ class Game:
         print()
         total_evals = sum(self.stats.evaluations_per_depth.values())
         print("Cumulative evaluations: ", total_evals)
+        print("% of cumulative evaluations per depth: ")
         for k in sorted(self.stats.evaluations_per_depth.keys()):
-            print(f"% of cumulative evaluations per depth: {k}:{self.stats.evaluations_per_depth[k]/total_evals*100} ", end='')
+            print(f"depth: {k}:{self.stats.evaluations_per_depth[k]/total_evals*100:0.2f} %\n", end='')
         print()
 
         print("Branching factor: ", total_evals/len(self.stats.evaluations_per_depth))
