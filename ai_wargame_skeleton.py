@@ -773,7 +773,57 @@ class Game:
         return heuristic
 
     def e2(self):
-        return 0
+        # Adjustable Weights
+        w1, w2, w3, w4 = 0.95, 0.95, 1.1, 1.05
+
+        # Matrix with our counts
+        count = [[(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
+
+        # Unit count, health sum get counted in the table in relation to their enum value
+        for i in range(self.options.dim):
+            for j in range(self.options.dim):
+                # If the cell is not empty:
+                if self.board[i][j] is not None:
+                    # using tuple zip unpacking to do element wise addition
+                    count[self.board[i][j].player.value][self.board[i][j].type.value] = tuple(
+                        a + b for a, b in zip(
+                            count[self.board[i][j].player.value][self.board[i][j].type.value],
+                            (1, self.board[i][j].health)
+                        ))
+
+        # Calculate the factor for the number of turns played
+        turns_factor = self.turns_played * w3
+
+        # Calculate the factor for the branching factor
+        branching_factor = sum(self.stats.evaluations_per_depth.values())/len(self.stats.evaluations_per_depth)
+        weighted_branching_factor = branching_factor * w4
+
+        # Initialize damage potential for both players
+        player0_damage_potential = 0
+        player1_damage_potential = 0
+
+        # Loop through to calculate damage potential
+        for unit_type in range(len(count[0])):
+            avg_damage = sum(Unit.damage_table[unit_type]) / len(Unit.damage_table[unit_type])
+            player0_damage_potential += count[0][unit_type][0] * avg_damage
+            player1_damage_potential += count[1][unit_type][0] * avg_damage
+        damage_potential = (player0_damage_potential - player1_damage_potential)
+
+        # Initialize damage potential for both players
+        player0_repair_potential = 0
+        player1_repair_potential = 0
+
+        # Loop through to calculate repair potential
+        for unit_type in range(len(count[0])):
+            avg_repair = sum(Unit.repair_table[unit_type]) / len(Unit.repair_table[unit_type])
+            player0_repair_potential += count[0][unit_type][0] * avg_repair
+            player1_repair_potential += count[1][unit_type][0] * avg_repair
+        repair_potential = (player0_repair_potential - player1_repair_potential)
+
+        # Heuristic operation
+        heuristic = float(((w1 * damage_potential) + (w2 * repair_potential)) * (w3 * turns_factor) *
+                          (w4 * weighted_branching_factor) * (-1 if self.next_player.value == 1 else 1))
+        return heuristic
 
     def minimax(self, start_time, depth=0, maximizing=True) -> Tuple[float | None, CoordPair | None]:
         """
