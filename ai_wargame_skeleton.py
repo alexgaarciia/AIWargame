@@ -307,7 +307,15 @@ class Game:
 
         Shallow copy of everything except the board (options and stats are shared).
         """
-        new = copy.deepcopy(self)
+        new = copy.copy(self)
+        new.board = copy.deepcopy(self.board)
+        new.next_player = copy.deepcopy(self.next_player)
+        new.turns_played = copy.deepcopy(self.turns_played)
+        new.options = copy.deepcopy(self.options)
+        new._attacker_has_ai = copy.deepcopy(self._attacker_has_ai)
+        new._defender_has_ai = copy.deepcopy(self._defender_has_ai)
+        new.stats = self.stats  # shallow copy for Stats
+
         return new
 
     def is_empty(self, coord: Coord) -> bool:
