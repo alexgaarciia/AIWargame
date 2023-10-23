@@ -777,7 +777,7 @@ class Game:
 
     def e2(self):
         # Adjustable Weights
-        w1, w2, w3, w4 = 0.95, 0.95, 1.1, 1.05
+        w1, w2, w3, w4, w5 = 0.95, 0.95, 1.1, 1.05, 10000
 
         # Matrix with our counts
         count = [[(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
@@ -793,6 +793,9 @@ class Game:
                             count[self.board[i][j].player.value][self.board[i][j].type.value],
                             (1, self.board[i][j].health)
                         ))
+
+        # Artificial Intelligence's health difference (advantage)
+        ai_health = (count[0][0][1] - count[1][0][1])
 
         # Calculate the factor for the number of turns played
         turns_factor = self.turns_played * w3
@@ -825,7 +828,7 @@ class Game:
 
         # Heuristic operation
         heuristic = float(((w1 * damage_potential) + (w2 * repair_potential)) * (w3 * turns_factor) *
-                          (w4 * weighted_branching_factor) * (-1 if self.next_player.value == 1 else 1))
+                          (w4 * weighted_branching_factor) + (w5 * ai_health) * (-1 if self.next_player.value == 1 else 1))
         return heuristic
 
     def minimax(self, start_time, depth=0, maximizing=True) -> Tuple[float | None, CoordPair | None]:
