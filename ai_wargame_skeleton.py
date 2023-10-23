@@ -777,7 +777,7 @@ class Game:
 
     def e2(self):
         # Adjustable Weights
-        w1, w2, w3, w4, w5 = 0.95, 0.95, 1.1, 1.05, 10000
+        w1, w2, w3, w4, w5 = 1.2, 1.2, 1.1, 1.05, 10000
 
         # Matrix with our counts
         count = [[(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
