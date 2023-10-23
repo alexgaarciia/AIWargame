@@ -985,7 +985,7 @@ class Game:
         # Suppress file output during the search
         fileprint.suppress_output = True
         
-        self.stats.evaluations_per_depth = field(default_factory=dict)
+        self.stats.evaluations_per_depth.clear()
         # Perform minimax search with alpha-beta pruning to find the best move
         if self.options.alpha_beta:
             (score, move) = self.minimax_with_alpha_beta(start_time)
@@ -1094,7 +1094,7 @@ def main():
     parser = argparse.ArgumentParser(
         prog='ai_wargame',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--heuristic', type=int, default=2, help='heuristic mode')
+    parser.add_argument('--heuristic', type=int, default=0, help='heuristic mode')
     parser.add_argument('--max_depth', type=int, default=4, help='maximum search depth')
     parser.add_argument('--max_time', type=float, default=5.0, help='maximum search time')
     parser.add_argument('--max_turns', type=int, help='maximum number of turns before game ends')
