@@ -984,8 +984,10 @@ class Game:
 
         # Suppress file output during the search
         fileprint.suppress_output = True
-        
+
+        # Clear stats from previous turn
         self.stats.evaluations_per_depth.clear()
+
         # Perform minimax search with alpha-beta pruning to find the best move
         if self.options.alpha_beta:
             (score, move) = self.minimax_with_alpha_beta(start_time)
@@ -1005,22 +1007,23 @@ class Game:
         print(f"Heuristic score: {score:.2f} for move: {move}")
 
         # Print evaluations per depth
+        print("Evaluation per depth:")
         for k in sorted(self.stats.evaluations_per_depth.keys()):
             if k == 0:
                 continue
-            print(f"{k}:{self.stats.evaluations_per_depth[k]} ", end='')
+            print(f"\t{k}:{self.stats.evaluations_per_depth[k]}", end='')
         print()
 
         # Calculate total number of evaluations
         total_evals = sum(self.stats.evaluations_per_depth.values())
 
         # Print cumulative evaluations and percentage of evaluations per depth
-        print("Cumulative evaluations: ", total_evals)
-        print("% of cumulative evaluations per depth: ")
+        print("Cumulative evaluations:", total_evals)
+        print("% of cumulative evaluations per depth:")
         for k in sorted(self.stats.evaluations_per_depth.keys()):
             if k == 0:
                 continue
-            print(f"depth: {k}:{self.stats.evaluations_per_depth[k]/total_evals*100:0.2f} %\n", end='')
+            print(f"\tdepth: {k}:{self.stats.evaluations_per_depth[k]/total_evals*100:0.2f} %\n", end='')
         print()
 
         # Calculate branching factor
